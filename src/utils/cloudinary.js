@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
@@ -9,7 +12,6 @@ cloudinary.config({
 });
 
 const uploadOnCloudinary = async (localFilePath) => {
-  console.log('hi');
   try {
     if (!localFilePath) return null;
 
@@ -18,13 +20,12 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto",
     });
     console.log("file has been uploaded successfully");
-    console.log(response);
-    // console.log(response.url);
+    fs.unlinkSync(localFilePath); // remove locally saved file
 
     return response;
   } catch (error) {
-    console.log(error)
-    fs.unlinkSync(localFilePath); // remove locally saved file as we got error uploading
+    console.log(error);
+    fs.unlinkSync(localFilePath); // remove locally saved file
     return null;
   }
 };
