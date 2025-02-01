@@ -16,9 +16,9 @@ const registerUser = async (req, res) => {
   ) {
     if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
     if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
-    
+
     return res.status(400).json({
-      messgae: "All fields are required",
+      message: "All fields are required",
     });
   }
 
@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
     if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
 
     return res.status(400).json({
-      messgae: "User with this email or username already exists",
+      message: "User with this email or username already exists",
     });
   }
 
@@ -60,22 +60,21 @@ const registerUser = async (req, res) => {
       fullName: fullName.trim(),
       avatar: avatar.url,
       coverImage: coverImage?.url || "",
-    })
+    });
 
     const createdUser = await User.findById(newUser._id).select(
       "-password -refreshToken"
-    )
+    );
 
     return res.status(200).json({
       message: "User registers successfully",
-      user: createdUser
-    })
-    
+      user: createdUser,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "Error registering user"
-    })
+      message: "Error registering user",
+    });
   }
 };
 
