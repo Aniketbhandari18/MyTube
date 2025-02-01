@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from "dotenv"; // i have to remove it (already put it in index.js, but not working)
 dotenv.config();
 
 import { v2 as cloudinary } from "cloudinary";

@@ -1,8 +1,11 @@
+import fs from "fs";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const registerUser = async (req, res) => {
   const { username, email, password, fullName } = req.body;
+  const avatarLocalPath = req.files.avatar?.[0]?.path;
+  const coverImageLocalpath = req.files["cover-image"]?.[0]?.path;
 
   // validation for empty fields
   if (
@@ -11,6 +14,9 @@ const registerUser = async (req, res) => {
     !password?.trim() ||
     !fullName?.trim()
   ) {
+    if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
+    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
+    
     return res.status(400).json({
       messgae: "All fields are required",
     });
@@ -22,30 +28,28 @@ const registerUser = async (req, res) => {
   });
 
   if (existingUser) {
+    if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
+    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
+
     return res.status(400).json({
       messgae: "User with this email or username already exists",
     });
   }
 
   // handle images
-  if (!req.files.avatar) {
-    return res.status(400).json({
-      message: "Avatar is required",
-    });
-  }
 
-  const avatarLocalPath = req.files.avatar?.[0]?.path;
-  const coverImageLocalpath = req.files["cover-image"]?.[0]?.path;
-
+  // check for avatar (mandatory)
   if (!avatarLocalPath) {
+    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
+
     return res.status(400).json({
       message: "Avatar is required",
     });
   }
 
+  // upload on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverImage = await uploadOnCloudinary(coverImageLocalpath);
-
 
   // create user
   try {
