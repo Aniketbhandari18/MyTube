@@ -78,4 +78,75 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { registerUser };
+const loginUser = async (req, res) =>{
+  // access details
+  const { username, email, password } = req.body;
+
+  // validation for empty data
+  if ( !(username?.trim() || email?.trim()) ){
+    return res.status(400).json({
+      message: "Username or email is required"
+    })
+  }
+  if (!password?.trim()){
+    return res.status(400).json({
+      message: "Password is required" 
+    })
+  }
+
+  // find user in database
+  try {
+    const user = await User.findOne({
+      $or: [{ username }, { email }]
+    })
+    
+    // check if user exist
+    if (!user){
+      return res.status(400).json({
+        message: "Account with this username or email doesn't exist"
+      })
+    }
+  
+    // match password
+    if (!await user.isPasswordCorrect(password.trim())){
+      return res.status(400).json({
+        message: "Incorrect password"
+      })
+    }
+
+    // generate access and refresh token
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    // store refreshToken in database
+    user.refreshToken = refreshToken;
+    await user.save(); // save
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+    // send cookies
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "User logged in successfully",
+        user: loggedInUser,
+        accessToken,
+        refreshToken
+      });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error while processing your login request"
+    })
+  }
+}
+
+export { registerUser, loginUser };
