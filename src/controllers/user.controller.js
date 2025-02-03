@@ -149,4 +149,49 @@ const loginUser = async (req, res) =>{
   }
 }
 
-export { registerUser, loginUser };
+const logoutUser = async (req, res) =>{
+  try {
+    // remove refreshToken from mongodb
+    const id = req.user._id;
+  
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          refreshToken: undefined
+        }
+      },
+      {
+        new: true
+      }
+    )
+    
+    // this might be unnecessary
+    if (!user){
+      return res.status(404).json({
+        message: "User does not exist"
+      })
+    }
+  
+    // remove cookies
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+  
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({
+        message: "Logged out successfully",
+      })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "An error occurred while logging out"
+    })
+  }
+}
+
+export { registerUser, loginUser, logoutUser };
