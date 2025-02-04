@@ -1,6 +1,7 @@
 import fs from "fs";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import jwt from "jsonwebtoken";
 
 const registerUser = async (req, res) => {
   const { username, email, password, fullName } = req.body;
@@ -194,4 +195,58 @@ const logoutUser = async (req, res) =>{
   }
 }
 
-export { registerUser, loginUser, logoutUser };
+const refreshAccessToken = async (req, res) =>{
+  try {
+    const incomingRefreshToken = req.cookies?.refreshToken;
+  
+    if (!incomingRefreshToken){
+      return res.status(403).json({
+        message: "Invalid or expired refreshToken"
+      })
+    }
+  
+    const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+  
+    const user = await User.findById(decodedToken?._id);
+  
+    if (!user){
+      return res.status(401).json({
+        message: "User not found"
+      })
+    }
+  
+    if (incomingRefreshToken !== user.refreshToken){
+      return res.status(403).json({
+        message: "Invalid refreshToken"
+      })
+    }
+  
+    const newAccessToken = User.generateAccessToken();
+    const newRefreshToken = User.generateRefreshToken();
+  
+    // store new refreshToken in mongodb;
+    user.refreshToken = newRefreshToken;
+    await user.save();
+  
+    // store access and refresh token in cookies
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+  
+    return res
+      .status(200)
+      .cookie("accessToken", newAccessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json({
+        message: "AccessToken refreshed successfully"
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(403).json({
+      message: "Invalid or expired refresh token"
+    })
+  }
+}
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
