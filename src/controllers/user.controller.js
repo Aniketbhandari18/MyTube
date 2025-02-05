@@ -1,6 +1,6 @@
 import fs from "fs";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
 const registerUser = async (req, res) => {
@@ -8,52 +8,44 @@ const registerUser = async (req, res) => {
   const avatarLocalPath = req.files.avatar?.[0]?.path;
   const coverImageLocalpath = req.files["cover-image"]?.[0]?.path;
 
-  // validation for empty fields
-  if (
-    !username?.trim() ||
-    !email?.trim() ||
-    !password?.trim() ||
-    !fullName?.trim()
-  ) {
-    if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
-    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
+  try {
+    // validation for empty fields
+    if (
+      !username?.trim() ||
+      !email?.trim() ||
+      !password?.trim() ||
+      !fullName?.trim()
+    ) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
-    return res.status(400).json({
-      message: "All fields are required",
+    // check if user already exists
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }], // checks by either username or email
     });
-  }
 
-  // check if user already exists
-  const existingUser = await User.findOne({
-    $or: [{ username }, { email }], // checks by either username or email
-  });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email or username already exists",
+      });
+    }
 
-  if (existingUser) {
-    if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
-    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
+    // handle images
 
-    return res.status(400).json({
-      message: "User with this email or username already exists",
-    });
-  }
+    // check for avatar (mandatory)
+    if (!avatarLocalPath) {
+      return res.status(400).json({
+        message: "Avatar is required",
+      });
+    }
 
-  // handle images
-
-  // check for avatar (mandatory)
-  if (!avatarLocalPath) {
-    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
-
-    return res.status(400).json({
-      message: "Avatar is required",
-    });
-  }
-
-  // upload on cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-  const coverImage = await uploadOnCloudinary(coverImageLocalpath);
+    // upload on cloudinary
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalpath);
 
   // create user
-  try {
     const newUser = await User.create({
       username: username.trim(),
       email: email.trim(),
@@ -77,6 +69,10 @@ const registerUser = async (req, res) => {
       message: "Error registering user",
     });
   }
+    finally{
+      if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
+      if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
+    }
 };
 
 const loginUser = async (req, res) =>{
@@ -249,4 +245,134 @@ const refreshAccessToken = async (req, res) =>{
   }
 }
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const editProfile = async (req, res) =>{
+  const {newUsername, newFullName, oldPassword, newPassword} = req.body;
+  const newAvatarLocalPath = req.files.avatar?.[0]?.path;
+  const newCoverImageLocalpath = req.files["cover-image"]?.[0]?.path;
+
+  try {
+    const id = req.user._id; // user _id
+    
+
+    // old password without a new password
+    if (oldPassword && !newPassword){
+      return res.status(400).json({
+        message: "New password is required"
+      })
+    }
+    // new password without an old password
+    if (newPassword && !oldPassword){
+      return res.status(400).json({
+        message: "Old password is required"
+      })
+    }
+
+
+    // check for atleast one field
+    if (!newUsername && !newFullName && !newAvatarLocalPath && !newCoverImageLocalpath && (!oldPassword && !newPassword)){
+      return res.status(400).json({
+        message: "Atleast one field is required"
+      })
+    }
+  
+  
+    const user = await User.findById(id);
+  
+    if (!user){
+      return res.status(404).json({
+        message: "User not found"
+      })
+    }
+  
+    const { username, fullName, avatar, coverImage } = user;
+  
+    // update username
+    if (newUsername){
+      if (newUsername === username){
+        return res.status(400).json({
+          message: "New username cannot be same as previous username"
+        })
+      }
+  
+      user.username = newUsername;
+    }
+  
+    // update fullname
+    if (newFullName){
+      if (newFullName === fullName){
+        return res.status(400).json({
+          message: "New fullName cannot be same as previous fullName"
+        })
+      }
+  
+      user.fullName = newFullName;
+    }
+  
+  
+    // update password
+    if (oldPassword && newPassword){
+      const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+  
+      if (!isPasswordCorrect){
+        return res.status(400).json({
+          message: "Wrong password"
+        })
+      }
+  
+      if (oldPassword === newPassword){
+        return res.status(400).json({
+          message: "New password cannot be the same as old password"
+        })
+      }
+  
+      user.password = newPassword;
+    }
+
+
+    // update avatar
+    if (newAvatarLocalPath){
+      const newAvatar = await uploadOnCloudinary(newAvatarLocalPath);
+      if (avatar) await deleteFromCloudinary(avatar);
+
+      if (!newAvatar){
+        return res.status(500).json({
+          message: "Error uploding avatar"
+        })
+      }
+
+      user.avatar = newAvatar.url;
+    }
+    // update cover image
+    if (newCoverImageLocalpath){
+      const newCoverImage = await uploadOnCloudinary(newCoverImageLocalpath);
+      if (coverImage) await deleteFromCloudinary(coverImage);
+
+      if (!newCoverImage){
+        return res.status(500).json({
+          message: "Error uploding cover image"
+        })
+      }
+
+      user.coverImage = newCoverImage.url;
+    }
+  
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated succesfully"
+    })
+
+  } catch (error) {
+    console.log("Error updating profile", error);
+
+    return res.status(500).json({
+      message: "Internal server error"
+    })
+  }
+  finally{
+    if (newAvatarLocalPath) fs.unlinkSync(newAvatarLocalPath);
+    if (newCoverImageLocalpath) fs.unlinkSync(newCoverImageLocalpath);
+  }
+}
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile };

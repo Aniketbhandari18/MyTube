@@ -2,7 +2,7 @@ import dotenv from "dotenv"; // i have to remove it (already put it in index.js,
 dotenv.config();
 
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
+import { extractPublicId } from 'cloudinary-build-url'
 
 // Configuration
 cloudinary.config({
@@ -19,15 +19,18 @@ const uploadOnCloudinary = async (localFilePath) => {
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
     });
-    console.log("file has been uploaded successfully");
-    fs.unlinkSync(localFilePath); // remove locally saved file
-
+    
     return response;
   } catch (error) {
     console.log(error);
-    fs.unlinkSync(localFilePath); // remove locally saved file
     return null;
   }
 };
 
-export { uploadOnCloudinary };
+const deleteFromCloudinary = async (url) =>{
+  const publicId = extractPublicId(url);
+
+  await cloudinary.uploader.destroy(publicId);
+}
+
+export { uploadOnCloudinary, deleteFromCloudinary };
