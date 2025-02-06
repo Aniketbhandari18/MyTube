@@ -1,6 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import errorHandler from "./utils/errorHandler.js";
+import { errorHandler } from "./utils/errorHandler.js";
 
 export const app = express();
 
@@ -15,4 +15,4 @@ app.use("/api/v1/user", userRouter);
 
 
 // handle error middleware
-app.use("/", errorHandler);
+app.use(errorHandler);

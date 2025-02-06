@@ -7,3 +7,5 @@ const asyncErrorHandler = (func) =>{
     }
   }
 }
+
+export { asyncErrorHandler };
