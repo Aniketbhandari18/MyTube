@@ -1,12 +1,13 @@
 import fs from "fs";
+import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
 const registerUser = async (req, res) => {
   const { username, email, password, fullName } = req.body;
-  const avatarLocalPath = req.files.avatar?.[0]?.path;
-  const coverImageLocalpath = req.files["cover-image"]?.[0]?.path;
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
+  const coverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
 
   try {
     // validation for empty fields
@@ -16,9 +17,7 @@ const registerUser = async (req, res) => {
       !password?.trim() ||
       !fullName?.trim()
     ) {
-      return res.status(400).json({
-        message: "All fields are required",
-      });
+      throw new ApiError(400, "All fields are required");
     }
 
     // check if user already exists
@@ -27,32 +26,25 @@ const registerUser = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({
-        message: "User with this email or username already exists",
-      });
+      throw new ApiError(
+        400,
+        "User with this email or username already exists"
+      );
     }
 
     // handle images
-
-    // check for avatar (mandatory)
-    if (!avatarLocalPath) {
-      return res.status(400).json({
-        message: "Avatar is required",
-      });
-    }
-
     // upload on cloudinary
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalpath);
 
-  // create user
+    // create user
     const newUser = await User.create({
       username: username.trim(),
       email: email.trim(),
       password: password.trim(),
       fullName: fullName.trim(),
-      avatar: avatar.url,
-      coverImage: coverImage?.url || "",
+      avatar: avatar.url || null,
+      coverImage: coverImage?.url || null,
     });
 
     const createdUser = await User.findById(newUser._id).select(
@@ -64,51 +56,45 @@ const registerUser = async (req, res) => {
       user: createdUser,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "Error registering user",
+    console.log(error.message);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Error registering user",
     });
+  } finally {
+    if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
+    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
   }
-    finally{
-      if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
-      if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
-    }
 };
 
-const loginUser = async (req, res) =>{
-  // access details
-  const { username, email, password } = req.body;
-
-  // validation for empty data
-  if ( !(username?.trim() || email?.trim()) ){
-    return res.status(400).json({
-      message: "Username or email is required"
-    })
-  }
-  if (!password?.trim()){
-    return res.status(400).json({
-      message: "Password is required" 
-    })
-  }
-
-  // find user in database
+const loginUser = async (req, res) => {
   try {
-    const user = await User.findOne({
-      $or: [{ username }, { email }]
-    })
-    
-    // check if user exist
-    if (!user){
-      return res.status(400).json({
-        message: "Account with this username or email doesn't exist"
-      })
+    // access details
+    const { username, email, password } = req.body;
+
+    // validation for empty data
+    if (!(username?.trim() || email?.trim())) {
+      throw new ApiError(400, "Username or email is required");
     }
-  
+    if (!password?.trim()) {
+      throw new ApiError(400, "Password is required");
+    }
+
+    // find user in database
+    const user = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+
+    // check if user exist
+    if (!user) {
+      throw new ApiError(
+        400,
+        "Account with this username or email doesn't exist"
+      );
+    }
+
     // match password
-    if (!await user.isPasswordCorrect(password.trim())){
-      return res.status(400).json({
-        message: "Incorrect password"
-      })
+    if (!(await user.isPasswordCorrect(password.trim()))) {
+      throw new ApiError(400, "Incorrect password");
     }
 
     // generate access and refresh token
@@ -119,13 +105,15 @@ const loginUser = async (req, res) =>{
     user.refreshToken = refreshToken;
     await user.save(); // save
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
 
     // send cookies
     const options = {
       httpOnly: true,
-      secure: true
-    }
+      secure: true,
+    };
 
     return res
       .status(200)
@@ -135,244 +123,244 @@ const loginUser = async (req, res) =>{
         message: "User logged in successfully",
         user: loggedInUser,
         accessToken,
-        refreshToken
+        refreshToken,
       });
-
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
-      message: "Error while processing your login request"
-    })
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Error while processing your login request",
+    });
   }
-}
+};
 
-const logoutUser = async (req, res) =>{
+const logoutUser = async (req, res) => {
   try {
     // remove refreshToken from mongodb
     const id = req.user._id;
-  
+
     const user = await User.findByIdAndUpdate(
       id,
       {
         $set: {
-          refreshToken: undefined
-        }
+          refreshToken: undefined,
+        },
       },
       {
-        new: true
+        new: true,
       }
-    )
-    
-    // this might be unnecessary
-    if (!user){
-      return res.status(404).json({
-        message: "User does not exist"
-      })
+    );
+
+    // Check for user
+    if (!user) {
+      throw new ApiError(404, "User does not exist");
     }
-  
+
     // remove cookies
     const options = {
       httpOnly: true,
-      secure: true
-    }
-  
+      secure: true,
+    };
+
     return res
       .status(200)
       .clearCookie("accessToken", options)
       .clearCookie("refreshToken", options)
       .json({
         message: "Logged out successfully",
-      })
+      });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
-      message: "An error occurred while logging out"
-    })
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "An error occurred while logging out",
+    });
   }
-}
+};
 
-const refreshAccessToken = async (req, res) =>{
+const refreshAccessToken = async (req, res) => {
   try {
     const incomingRefreshToken = req.cookies?.refreshToken;
-  
-    if (!incomingRefreshToken){
-      return res.status(403).json({
-        message: "Invalid or expired refreshToken"
-      })
+
+    if (!incomingRefreshToken) {
+      throw new ApiError(401, "Invalid or expired refreshToken");
     }
-  
-    const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-  
+
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
     const user = await User.findById(decodedToken?._id);
-  
-    if (!user){
-      return res.status(401).json({
-        message: "User not found"
-      })
+
+    // Check for user
+    if (!user) {
+      throw new ApiError(404, "User not found");
     }
-  
-    if (incomingRefreshToken !== user.refreshToken){
-      return res.status(403).json({
-        message: "Invalid refreshToken"
-      })
+
+    if (incomingRefreshToken !== user.refreshToken) {
+      throw new ApiError(401, "Invalid refreshToken");
     }
-  
-    const newAccessToken = User.generateAccessToken();
-    const newRefreshToken = User.generateRefreshToken();
-  
+
+    const newAccessToken = user.generateAccessToken();
+    const newRefreshToken = user.generateRefreshToken();
+
     // store new refreshToken in mongodb;
     user.refreshToken = newRefreshToken;
     await user.save();
-  
+
     // store access and refresh token in cookies
     const options = {
       httpOnly: true,
-      secure: true
-    }
-  
+      secure: true,
+    };
+
     return res
       .status(200)
       .cookie("accessToken", newAccessToken, options)
       .cookie("refreshToken", newRefreshToken, options)
       .json({
-        message: "AccessToken refreshed successfully"
+        message: "AccessToken refreshed successfully",
       });
   } catch (error) {
     console.log(error);
-    return res.status(403).json({
-      message: "Invalid or expired refresh token"
-    })
+    return res.status(error.statusCode || 401).json({
+      message: error.message || "Invalid or expired refresh token",
+    });
   }
-}
+};
 
-const editProfile = async (req, res) =>{
-  const {newUsername, newFullName, oldPassword, newPassword} = req.body;
-  const newAvatarLocalPath = req.files.avatar?.[0]?.path;
-  const newCoverImageLocalpath = req.files["cover-image"]?.[0]?.path;
+const editProfile = async (req, res) => {
+  const { newUsername, newFullName, oldPassword, newPassword } = req.body;
+  const newAvatarLocalPath = req.files?.avatar?.[0]?.path;
+  const newCoverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
+
+  const deleteAvatar = req.body.deleteAvatar === "true";
+  const deleteCoverImage = req.body.deleteCoverImage === "true";
 
   try {
     const id = req.user._id; // user _id
-    
 
     // old password without a new password
-    if (oldPassword && !newPassword){
-      return res.status(400).json({
-        message: "New password is required"
-      })
+    if (oldPassword && !newPassword) {
+      throw new ApiError(400, "New password is required");
     }
     // new password without an old password
-    if (newPassword && !oldPassword){
-      return res.status(400).json({
-        message: "Old password is required"
-      })
+    if (newPassword && !oldPassword) {
+      throw new ApiError(400, "Old password is required");
     }
-
 
     // check for atleast one field
-    if (!newUsername && !newFullName && !newAvatarLocalPath && !newCoverImageLocalpath && (!oldPassword && !newPassword)){
-      return res.status(400).json({
-        message: "Atleast one field is required"
-      })
+    if (
+      !newUsername &&
+      !newFullName &&
+      !newAvatarLocalPath &&
+      !newCoverImageLocalpath &&
+      !oldPassword &&
+      !newPassword
+    ) {
+      throw new ApiError(400, "Atleast one field is required");
     }
-  
-  
+
     const user = await User.findById(id);
-  
-    if (!user){
-      return res.status(404).json({
-        message: "User not found"
-      })
+
+    // Check for user
+    if (!user) {
+      throw new ApiError(404, "User not found");
     }
-  
+
     const { username, fullName, avatar, coverImage } = user;
-  
+
     // update username
-    if (newUsername){
-      if (newUsername === username){
-        return res.status(400).json({
-          message: "New username cannot be same as previous username"
-        })
+    if (newUsername) {
+      if (newUsername === username) {
+        throw new ApiError(400, "New username cannot be same as previous username");
       }
-  
+
       user.username = newUsername;
     }
-  
+
     // update fullname
-    if (newFullName){
-      if (newFullName === fullName){
-        return res.status(400).json({
-          message: "New fullName cannot be same as previous fullName"
-        })
+    if (newFullName) {
+      if (newFullName === fullName) {
+        throw new ApiError(
+          400,
+          "New fullName cannot be same as previous fullName"
+        );
       }
-  
+
       user.fullName = newFullName;
     }
-  
-  
+
     // update password
-    if (oldPassword && newPassword){
+    if (oldPassword && newPassword) {
       const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
-  
-      if (!isPasswordCorrect){
-        return res.status(400).json({
-          message: "Wrong password"
-        })
+
+      if (!isPasswordCorrect) {
+        throw new ApiError(400, "Wrong password");
       }
-  
-      if (oldPassword === newPassword){
-        return res.status(400).json({
-          message: "New password cannot be the same as old password"
-        })
+
+      if (oldPassword === newPassword) {
+        throw new ApiError(400, "New password cannot be same as old password");
       }
-  
+
       user.password = newPassword;
     }
 
-
     // update avatar
-    if (newAvatarLocalPath){
+    if (newAvatarLocalPath) {
       const newAvatar = await uploadOnCloudinary(newAvatarLocalPath);
       if (avatar) await deleteFromCloudinary(avatar);
 
-      if (!newAvatar){
-        return res.status(500).json({
-          message: "Error uploding avatar"
-        })
+      if (!newAvatar) {
+        throw new ApiError(500, "Error uploading avatar");
       }
 
       user.avatar = newAvatar.url;
     }
     // update cover image
-    if (newCoverImageLocalpath){
+    if (newCoverImageLocalpath) {
       const newCoverImage = await uploadOnCloudinary(newCoverImageLocalpath);
       if (coverImage) await deleteFromCloudinary(coverImage);
 
-      if (!newCoverImage){
-        return res.status(500).json({
-          message: "Error uploding cover image"
-        })
+      if (!newCoverImage) {
+        throw new ApiError(500, "Error uploading cover image");
       }
 
       user.coverImage = newCoverImage.url;
     }
-  
+
+    // deleter avatar
+    if (deleteAvatar && avatar) {
+      await deleteFromCloudinary(avatar);
+      user.avatar = null;
+    }
+
+    // deleter cover image
+    if (deleteCoverImage && coverImage) {
+      await deleteFromCloudinary(coverImage);
+      user.coverImage = null;
+    }
+
     await user.save();
 
     return res.status(200).json({
-      message: "Profile updated succesfully"
-    })
-
+      message: "Profile updated succesfully",
+      user: {
+        username: user.username,
+        fullName: user.fullName,
+        avatar: user.avatar,
+        coverImage: user.coverImage,
+      },
+    });
   } catch (error) {
     console.log("Error updating profile", error);
 
-    return res.status(500).json({
-      message: "Internal server error"
-    })
-  }
-  finally{
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Error updating profile",
+    });
+  } finally {
     if (newAvatarLocalPath) fs.unlinkSync(newAvatarLocalPath);
     if (newCoverImageLocalpath) fs.unlinkSync(newCoverImageLocalpath);
   }
-}
+};
 
 export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile };
