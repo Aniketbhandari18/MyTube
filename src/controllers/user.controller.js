@@ -1,6 +1,7 @@
 import fs from "fs";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
+import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
@@ -363,4 +364,100 @@ const editProfile = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile };
+const getUserProfileDetails = async (req, res) =>{
+  try {
+    const username = req.params.username?.trim();
+  
+    if (!username){
+      throw new ApiError(400, "username not provided");
+    }
+  
+    // code with aggregaton pipeline
+    // User.aggregate([
+    //   {
+    //     $match: {
+    //       username: username.trim()
+    //     }
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "subscriptions",
+    //       localField: "_id",
+    //       foreignField: "channel",
+    //       as: "subscribers"
+    //     }
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "subscriptions",
+    //       localField: "_id",
+    //       foreignField: "subscriber",
+    //       as: "subscribedTo"
+    //     }
+    //   },
+    //   {
+    //     $addFields: {
+    //       subscriberCount: {
+    //         $size: "$subscribers"
+    //       },
+    //       subscribedToCount: {
+    //         $size: "$subscribedTo"
+    //       },
+    //       isSubscribed: {
+    //         $cond: {
+    //           if: {$in: [req.user?._id, $subscribers.subscriber]},
+    //           then: true,
+    //           else: false
+    //         }
+    //       }
+    //     }
+    //   },
+    //   {
+    //     $project: {
+    //       username: 1,
+    //       fullName: 1,
+    //       avatar: 1,
+    //       coverImage: 1,
+    //       subscriberCount: 1,
+    //       subscribedToCount: 1,
+    //       isSubscribed: 1,
+    //       createdAt: 1
+    //     }
+    //   }
+    // ]);
+  
+    // my code without aggregation pipeline
+    const channel = await User.findOne({ username });
+  
+    if (!channel) {
+      throw new ApiError(404, "No such channel exists");
+    }
+  
+    const [subscriberCount, subscribedToCount, isSubscribed] = await Promise.all([
+      Subscription.countDocuments({ channel: channel._id }),
+      Subscription.countDocuments({ subscriber: channel._id }),
+      (req.user) ? Subscription.exists({ channel: channel._id, subscriber: req.user._id }): false
+    ]);
+  
+    return res.status(200).json({
+      message: "ok",
+      user: {
+        _id: channel._id,
+        username: channel.username,
+        fullName: channel.fullName,
+        avatar: channel.avatar,
+        coverImage: channel.coverImage,
+        subscriberCount: subscriberCount,
+        subscribedToCount: subscribedToCount,
+        isSubscribed: !!isSubscribed
+      }
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    })
+  }
+}
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile, getUserProfileDetails };
