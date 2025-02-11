@@ -441,9 +441,8 @@ const getUserProfileDetails = async (req, res) =>{
       throw new ApiError(404, "No such channel exists");
     }
   
-    const [subscriberCount, subscribedToCount, isSubscribed] = await Promise.all([
+    const [subscriberCount, isSubscribed] = await Promise.all([
       Subscription.countDocuments({ channel: channel._id }),
-      Subscription.countDocuments({ subscriber: channel._id }),
       (req.user) ? Subscription.exists({ channel: channel._id, subscriber: req.user._id }): false
     ]);
   
@@ -456,7 +455,6 @@ const getUserProfileDetails = async (req, res) =>{
         avatar: channel.avatar,
         coverImage: channel.coverImage,
         subscriberCount: subscriberCount,
-        subscribedToCount: subscribedToCount,
         isSubscribed: !!isSubscribed
       }
     })
