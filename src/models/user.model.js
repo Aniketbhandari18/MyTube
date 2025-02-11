@@ -38,15 +38,6 @@ const userSchema = new Schema(
     coverImage: {
       type: String, // third party service url
     },
-    watchHistory: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Video",
-        },
-      ],
-      default: [],
-    },
     refreshToken: {
       type: String,
     },
