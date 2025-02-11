@@ -6,24 +6,25 @@ import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js
 import jwt from "jsonwebtoken";
 
 const registerUser = async (req, res) => {
-  const { username, email, password, fullName } = req.body;
+  // const { username, email, password, fullName } = req.body;
+  const username = req.body.username?.trim().toLowerCase();
+  const email = req.body.email?.trim().toLowerCase();
+  const password = req.body.password?.trim();
+  const fullName = req.body.fullName?.trim();
+
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
   const coverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
 
   try {
     // validation for empty fields
-    if (
-      !username?.trim() ||
-      !email?.trim() ||
-      !password?.trim() ||
-      !fullName?.trim()
-    ) {
+    if (!username ||!email ||!password ||!fullName){
       throw new ApiError(400, "All fields are required");
     }
 
     // check if user already exists
     const existingUser = await User.findOne({
-      $or: [{ username }, { email }], // checks by either username or email
+      // checks by either username or email
+      $or: [{ username}, { email }], 
     });
 
     if (existingUser) {
@@ -40,10 +41,10 @@ const registerUser = async (req, res) => {
 
     // create user
     const newUser = await User.create({
-      username: username.trim(),
-      email: email.trim(),
-      password: password.trim(),
-      fullName: fullName.trim(),
+      username,
+      email,
+      password,
+      fullName,
       avatar: avatar.url || null,
       coverImage: coverImage?.url || null,
     });
@@ -70,19 +71,20 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     // access details
-    const { username, email, password } = req.body;
+    const identifier = req.body.identifier?.trim().toLowerCase(); // username or email
+    const password = req.body.password?.trim();
 
     // validation for empty data
-    if (!(username?.trim() || email?.trim())) {
+    if (!identifier) {
       throw new ApiError(400, "Username or email is required");
     }
-    if (!password?.trim()) {
+    if (!password) {
       throw new ApiError(400, "Password is required");
     }
 
     // find user in database
     const user = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ email: identifier }, { username: identifier }],
     });
 
     // check if user exist
@@ -94,7 +96,7 @@ const loginUser = async (req, res) => {
     }
 
     // match password
-    if (!(await user.isPasswordCorrect(password.trim()))) {
+    if (!(await user.isPasswordCorrect(password))) {
       throw new ApiError(400, "Incorrect password");
     }
 
@@ -230,7 +232,8 @@ const refreshAccessToken = async (req, res) => {
 };
 
 const editProfile = async (req, res) => {
-  const { newUsername, newFullName, oldPassword, newPassword } = req.body;
+  const newUsername = req.body.newUsername?.trim().toLowerCase();
+  const { newFullName, oldPassword, newPassword } = req.body;
   const newAvatarLocalPath = req.files?.avatar?.[0]?.path;
   const newCoverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
 
@@ -274,6 +277,11 @@ const editProfile = async (req, res) => {
     if (newUsername) {
       if (newUsername === username) {
         throw new ApiError(400, "New username cannot be same as previous username");
+      }
+
+      const usernameExisting = await User.find({ username: newUsername });
+      if (usernameExisting){
+        throw new ApiError(400, "Username is already taken");
       }
 
       user.username = newUsername;
@@ -366,7 +374,7 @@ const editProfile = async (req, res) => {
 
 const getUserProfileDetails = async (req, res) =>{
   try {
-    const username = req.params.username?.trim();
+    const username = req.params.username?.trim().toLowerCase();
   
     if (!username){
       throw new ApiError(400, "username not provided");
