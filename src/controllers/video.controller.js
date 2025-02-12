@@ -40,8 +40,8 @@ const videoPublish = async (req, res) =>{
     // console.log(videoFile);
   
     const response = await Video.create({
-      videoFile: videoFile.url,
-      thumbnail: thumbnail.url,
+      videoFile: videoFile.secure_url,
+      thumbnail: thumbnail.secure_url,
       title: title,
       description: description || "",
       duration: videoFile.duration,
