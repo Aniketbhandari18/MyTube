@@ -45,8 +45,8 @@ const registerUser = async (req, res) => {
       email,
       password,
       fullName,
-      avatar: avatar.url || null,
-      coverImage: coverImage?.url || null,
+      avatar: avatar.secure_url || null,
+      coverImage: coverImage?.secure_url || null,
     });
 
     const createdUser = await User.findById(newUser._id).select(
@@ -323,7 +323,7 @@ const editProfile = async (req, res) => {
         throw new ApiError(500, "Error uploading avatar");
       }
 
-      user.avatar = newAvatar.url;
+      user.avatar = newAvatar.secure_url;
     }
     // update cover image
     if (newCoverImageLocalpath) {
@@ -334,7 +334,7 @@ const editProfile = async (req, res) => {
         throw new ApiError(500, "Error uploading cover image");
       }
 
-      user.coverImage = newCoverImage.url;
+      user.coverImage = newCoverImage.secure_url;
     }
 
     // deleter avatar
