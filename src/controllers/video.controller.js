@@ -71,6 +71,7 @@ const videoUpdate = async (req, res) =>{
 
   try {
     const { videoId } = req.params;
+    const user = req.user;
     const title = req.body.title?.trim();
     const description = req.body.description?.trim();
   
@@ -79,11 +80,17 @@ const videoUpdate = async (req, res) =>{
     if (!existingVideo){
       throw new ApiError(400, "Video doesn't exist");
     }
-  
+
+    if (existingVideo.owner.toString() !== user._id.toString()){
+      throw new ApiError(403, "You do not have this permission");
+    }
+    
+    // validation
     if (!title && !description && !thumbnailLocalPath){
       throw new ApiError(400, "Atleast one field is required to update");
     }
-  
+    
+    // update title
     if (title){
       if (existingVideo.title === title){
         throw new ApiError(400, "New title cannot be same as previous title");
@@ -91,6 +98,8 @@ const videoUpdate = async (req, res) =>{
 
       existingVideo.title = title;
     }
+
+    // update description
     if (description){
       if (existingVideo.description === description){
         throw new ApiError(400, "New description cannot be same as previous description");
@@ -98,6 +107,8 @@ const videoUpdate = async (req, res) =>{
 
       existingVideo.description = description;
     }
+
+    // update thumbnail
     if (thumbnailLocalPath){
       const newThumnail = await uploadOnCloudinary(thumbnailLocalPath);
       
