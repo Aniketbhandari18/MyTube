@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { Video } from "../models/video.model.js"
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
-const videoPublish = async (req, res) =>{
+const publishVideo = async (req, res) =>{
   const thumbnailLocalPath = req.files?.thumbnail?.[0].path;
   const videoLocalPath = req.files?.video?.[0].path;
 
@@ -66,7 +66,7 @@ const videoPublish = async (req, res) =>{
   }
 }
 
-const videoUpdate = async (req, res) =>{
+const updateVideo = async (req, res) =>{
   const thumbnailLocalPath = req.file?.path;
 
   try {
@@ -143,4 +143,4 @@ const videoUpdate = async (req, res) =>{
   }
 }
 
-export { videoPublish, videoUpdate };
+export { publishVideo, updateVideo };
