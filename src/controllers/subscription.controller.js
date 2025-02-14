@@ -50,4 +50,14 @@ const handleSubscription = async (req, res) =>{
   }
 }
 
+
+// Helper functions
+const countSubscribers = (channelId) =>{
+  return Subscription.countDocuments({ channel: channelId });
+}
+
+const isSubscribed = (channelId, userId) =>{
+  return Subscription.exists({ subscriber: userId, channel: channelId });
+}
+
 export { handleSubscription };

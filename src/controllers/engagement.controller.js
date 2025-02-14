@@ -51,4 +51,10 @@ const handleEngagement = async (req, res) =>{
   }
 }
 
-export { handleEngagement };
+
+// Helper functions
+const countEngagements = (videoId, action) =>{
+  return Engagement.countDocuments({ video: videoId, action: action });
+}
+
+export { handleEngagement, countEngagements };
