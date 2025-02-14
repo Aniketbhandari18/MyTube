@@ -33,7 +33,6 @@ const userSchema = new Schema(
     },
     avatar: {
       type: String, // third party service url
-      required: true,
     },
     coverImage: {
       type: String, // third party service url

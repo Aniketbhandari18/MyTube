@@ -45,7 +45,7 @@ const registerUser = async (req, res) => {
       email,
       password,
       fullName,
-      avatar: avatar.secure_url || null,
+      avatar: avatar?.secure_url || null,
       coverImage: coverImage?.secure_url || null,
     });
 
