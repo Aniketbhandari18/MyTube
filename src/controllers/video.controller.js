@@ -143,4 +143,30 @@ const updateVideo = async (req, res) =>{
   }
 }
 
-export { publishVideo, updateVideo };
+const incrementView = async (req, res) =>{
+  try {
+    const { videoId } = req.params;
+  
+    const updateVideo = await Video.findByIdAndUpdate(
+      videoId,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+
+    if (!updateVideo){
+      throw new ApiError(404, "Video doesn't exist");
+    }
+
+    return res.status(200).json({
+      message: "View count incremented successfully",
+      video: updateVideo
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    })
+  }
+}
+
+export { publishVideo, updateVideo, incrementView };
