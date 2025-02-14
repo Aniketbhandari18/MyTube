@@ -26,7 +26,7 @@ router.route("/:username").get(getUserProfileDetails);
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/edit-profile").post(
+router.route("/edit-profile").patch(
   verifyJWT,
   upload.fields([
     {

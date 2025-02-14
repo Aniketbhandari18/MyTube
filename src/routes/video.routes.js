@@ -19,7 +19,7 @@ router.route("/publish").post(
   ]),
   publishVideo
 );
-router.route("/update/:videoId").post(
+router.route("/update/:videoId").patch(
   verifyJWT,
   upload.single("thumbnail"),
   updateVideo
