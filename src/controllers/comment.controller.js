@@ -6,7 +6,7 @@ const addComment = async (req, res) =>{
   try {
     const { videoId } = req.params;
     const userId = req.user._id;
-    const { comment } = req.body;
+    const { content } = req.body;
 
     const video = await Video.findById(videoId);
 
@@ -14,12 +14,12 @@ const addComment = async (req, res) =>{
       throw new ApiError(404, "Video doesn't exist");
     }
 
-    if (!comment?.trim()){
+    if (!content?.trim()){
       throw new ApiError(400, "Comment cannot be empty");
     }
   
     const createdComment = await Comment.create({
-      comment: comment,
+      comment: content,
       user: userId,
       video: videoId
     })
