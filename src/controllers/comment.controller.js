@@ -38,4 +38,48 @@ const addComment = async (req, res) =>{
   }
 };
 
-export { addComment };
+const editComment = async (req, res) =>{
+  try {
+    const { commentId } = req.params;
+    const userId = req.user._id;
+    const { editedContent } = req.body;
+
+    // Check if comment is empty
+    if (!editedContent?.trim()){
+      throw new ApiError(400, "Comment cannot be empty");
+    }
+    
+    // Find existing comment
+    const existingComment = await Comment.findById(commentId);
+  
+    if (!existingComment){
+      throw new ApiError(404, "Comment doesn't exist");
+    }
+    
+    // Match if comment belong to the logged-in user
+    if (existingComment.user.toString() !== userId.toString()){
+      throw new ApiError(403, "You do not have permission to edit this comment");
+    }
+    
+    // Check if edited comment is same as previous comment
+    if (editedContent.trim() === existingComment.content){
+      throw new ApiError(400, "Edited comment cannot be same as previous comment");
+    }
+  
+    existingComment.content = editedContent;
+  
+    const editedComment = await existingComment.save();
+  
+    return res.status(200).json({
+      message: "Comment edited successfully",
+      editedComment: editedComment
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+}
+
+export { addComment, editComment };

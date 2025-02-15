@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { addComment } from "../controllers/comment.controller.js";
+import { addComment, editComment } from "../controllers/comment.controller.js";
 
 const router = Router();
 
-router.route("/:videoId").post(verifyJWT, addComment);
+router.route("/:commentId").post(verifyJWT, addComment);
+router.route("/edit/:commentId").patch(verifyJWT, editComment);
 
 export default router;
