@@ -82,4 +82,34 @@ const editComment = async (req, res) =>{
   }
 }
 
-export { addComment, editComment };
+const deleteComment = async (req, res) =>{
+  try {
+    const { commentId } = req.params;
+    const userId = req.user._id;
+  
+    const deletedComment = await Comment.findOneAndDelete({
+      _id: commentId,
+      user: userId
+    });
+  
+    if (!deletedComment){
+      const existingComment = await Comment.findById(commentId);
+      if (existingComment) {
+        throw new ApiError(403, "You don't have permission to delete this comment");
+      }
+      throw new ApiError(404, "Comment doesn't exist");
+    }
+  
+    return res.status(200).json({
+      message: "Comment deleted successfully",
+      deletedComment: deletedComment
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error",
+    });
+  }
+}
+
+export { addComment, editComment, deleteComment };
