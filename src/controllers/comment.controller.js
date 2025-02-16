@@ -112,4 +112,36 @@ const deleteComment = async (req, res) =>{
   }
 }
 
-export { addComment, editComment, deleteComment };
+const getVideoComments = async (req, res) =>{
+  try {
+    const { videoId } = req.params;
+    const { page } = req.query;
+  
+    const pageNumber = Math.max(parseInt(page, 10) || 0, 0);
+    const commentsPerPage = 20;
+
+    const totalComments = await Comment.countDocuments({ video: videoId });
+    const hasMore = (totalComments > (pageNumber + 1) * commentsPerPage);
+
+    const comments = await Comment
+      .find({ video: videoId })
+      .sort({ updatedAt: -1 })
+      .skip(pageNumber * commentsPerPage)
+      .limit(commentsPerPage)
+      .populate("user", "username avatar");
+
+    return res.status(200).json({
+      message: "Comments fetched successfully",
+      totalComments: totalComments,
+      comments: comments,
+      hasMore: hasMore
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+
+export { addComment, editComment, deleteComment, getVideoComments };
