@@ -19,7 +19,7 @@ const addComment = async (req, res) =>{
     }
   
     const createdComment = await Comment.create({
-      comment: content,
+      content: content,
       user: userId,
       video: videoId
     })
