@@ -1,4 +1,5 @@
 import { WatchHistory } from "../models/watchHistory.model.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const addVideoToWatchHistory = async(req, res) =>{
   try {
@@ -32,6 +33,28 @@ const addVideoToWatchHistory = async(req, res) =>{
     console.log(error);
     return res.status(500).json({
       message: "Internal Server Error"
+    });
+  }
+};
+
+const removeVideoFromWatchHistory = async (req, res) =>{
+  try {
+    const { watchHistoryId } = req.params;
+  
+    const removedVideo = await WatchHistory.findByIdAndDelete(watchHistoryId);
+
+    if (!removedVideo){
+      throw new ApiError(404, "Video not found in watch history");
+    }
+  
+    return res.status(200).json({
+      message: "Video removed from watch history",
+      removedVideo: removedVideo
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
     });
   }
 };
@@ -73,4 +96,4 @@ const getWatchHistory = async (req, res) =>{
   }
 };
 
-export { getWatchHistory, addVideoToWatchHistory };
+export { getWatchHistory, addVideoToWatchHistory, removeVideoFromWatchHistory };
