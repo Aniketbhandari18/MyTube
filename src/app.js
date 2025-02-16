@@ -13,9 +13,11 @@ import videoRouter from "./routes/video.routes.js";
 import engagementRouter from "./routes/engagement.routes.js";
 import subscriptionRouter from "./routes/subscription.routes.js";
 import commentRouter from "./routes/comment.routes.js";
+import watchHistoryRouter from "./routes/watchHistory.routes.js";
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/video", videoRouter);
 app.use("/api/v1/engagement", engagementRouter);
 app.use("/api/v1/subscription", subscriptionRouter);
 app.use("/api/v1/comment", commentRouter);
+app.use("/api/v1/watchHistory", watchHistoryRouter);
