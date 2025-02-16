@@ -36,4 +36,41 @@ const addVideoToWatchHistory = async(req, res) =>{
   }
 };
 
-export { addVideoToWatchHistory };
+const getWatchHistory = async (req, res) =>{
+  try {
+    const userId = req.user._id;
+    const page = parseInt(req.query.page, 10) || 0;
+    const videosPerPage = parseInt(req.query.limit, 10) || 20;
+
+    const totalVideos = await WatchHistory.countDocuments({ user: userId });
+    const hasMore = totalVideos > (page + 1) * videosPerPage;
+  
+    const watchHistory = await WatchHistory
+      .find({ user: userId })
+      .skip(page * videosPerPage)
+      .limit(videosPerPage)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "video",
+        select: "_id thumbnail title duration owner views createdAt",
+        populate: {
+          path: "owner",
+          select: "_id username"
+        }
+      });
+
+    return res.status(200).json({
+      message: "Watch history fetched successfully",
+      totalVideos: totalVideos,
+      watchHistory: watchHistory,
+      hasMore: hasMore
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+
+export { getWatchHistory, addVideoToWatchHistory };
