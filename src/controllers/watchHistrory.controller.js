@@ -59,6 +59,24 @@ const removeVideoFromWatchHistory = async (req, res) =>{
   }
 };
 
+const clearWatchHistory = async (req, res) =>{
+  try {
+    const userId = req.user._id;
+  
+    const response = await WatchHistory.deleteMany({ user: userId });
+  
+    return res.status(200).json({
+      message: "Watch history cleared successfully",
+      deletedCount: response.deletedCount
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error clearing watch history"
+    });
+  }
+};
+
 const getWatchHistory = async (req, res) =>{
   try {
     const userId = req.user._id;
@@ -96,4 +114,4 @@ const getWatchHistory = async (req, res) =>{
   }
 };
 
-export { getWatchHistory, addVideoToWatchHistory, removeVideoFromWatchHistory };
+export { getWatchHistory, addVideoToWatchHistory, removeVideoFromWatchHistory, clearWatchHistory };
