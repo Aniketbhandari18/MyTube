@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.route("/:videoId").post(verifyJWT, addVideoToWatchHistory);
-router.route("/:watchHistoryId").delete(verifyJWT, removeVideoFromWatchHistory);
+router.route("/remove/:watchHistoryId").delete(verifyJWT, removeVideoFromWatchHistory);
 router.route("/clear").delete(verifyJWT, clearWatchHistory);
 router.route("/").get(verifyJWT, getWatchHistory);
 
