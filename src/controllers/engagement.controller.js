@@ -72,11 +72,12 @@ const getLikedVideos = async (req, res) =>{
           path: "owner",
           select: "_id username"
         }
-      });
+      })
+      .select("-action -user");
   
     return res.status(200).json({
       message: "Liked videos fetched successfully",
-      likedVideosCount: likedVideos.length,
+      likedVideosCount: totalVideos,
       likedVideos: likedVideos,
       hasMore: hasMore
     });
