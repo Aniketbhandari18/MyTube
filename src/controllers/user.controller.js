@@ -466,4 +466,21 @@ const getUserProfileDetails = async (req, res) =>{
   }
 }
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile, getUserProfileDetails };
+const deleteUserProfile = async (req, res) =>{
+  try {
+    const userId = req.user._id;
+  
+    await User.findByIdAndDelete(userId);
+  
+    return res.status(200).json({
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error deleting user"
+    });
+  }
+};
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile, getUserProfileDetails, deleteUserProfile };

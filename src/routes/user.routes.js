@@ -1,7 +1,15 @@
 import { Router } from "express";
-import { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile, getUserProfileDetails } from "../controllers/user.controller.js";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  editProfile,
+  getUserProfileDetails,
+  deleteUserProfile,
+} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js"
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -40,6 +48,6 @@ router.route("/edit-profile").patch(
   ]),
   editProfile
 );
-
+router.route("/delete-profile").delete(deleteUserProfile);
 
 export default router;
