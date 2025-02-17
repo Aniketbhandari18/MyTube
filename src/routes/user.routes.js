@@ -48,6 +48,6 @@ router.route("/edit-profile").patch(
   ]),
   editProfile
 );
-router.route("/delete-profile").delete(deleteUserProfile);
+router.route("/delete-profile").delete(verifyJWT, deleteUserProfile);
 
 export default router;
