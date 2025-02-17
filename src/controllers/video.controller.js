@@ -143,6 +143,24 @@ const updateVideo = async (req, res) =>{
   }
 }
 
+const deleteVideo = async (req, res) =>{
+  try {
+    const { videoId } = req.params;
+  
+    const deletedVideo = await Video.findByIdAndDelete(videoId);
+  
+    return res.status(200).json({
+      message: "Video deleted successfully",
+      deletedVideo: deletedVideo
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error deleting video"
+    });
+  }
+};
+
 const incrementView = async (req, res) =>{
   try {
     const { videoId } = req.params;
@@ -169,4 +187,4 @@ const incrementView = async (req, res) =>{
   }
 }
 
-export { publishVideo, updateVideo, incrementView };
+export { publishVideo, updateVideo, incrementView, deleteVideo };

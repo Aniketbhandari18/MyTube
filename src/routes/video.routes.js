@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { publishVideo, updateVideo, incrementView } from "../controllers/video.controller.js";
+import {
+  publishVideo,
+  updateVideo,
+  incrementView,
+  deleteVideo,
+} from "../controllers/video.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -10,20 +15,19 @@ router.route("/publish").post(
   upload.fields([
     {
       name: "thumbnail",
-      maxCount: 1
+      maxCount: 1,
     },
     {
       name: "video",
-      maxCount: 1
-    }
+      maxCount: 1,
+    },
   ]),
   publishVideo
 );
-router.route("/update/:videoId").patch(
-  verifyJWT,
-  upload.single("thumbnail"),
-  updateVideo
-);
+router
+  .route("/update/:videoId")
+  .patch(verifyJWT, upload.single("thumbnail"), updateVideo);
+router.route("/:videoId").delete(deleteVideo);
 router.route("/incrementView/:videoId").post(incrementView);
 
 export default router;
