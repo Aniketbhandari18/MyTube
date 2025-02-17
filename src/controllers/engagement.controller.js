@@ -51,10 +51,46 @@ const handleEngagement = async (req, res) =>{
   }
 }
 
+const getLikedVideos = async (req, res) =>{
+  try {
+    const userId = req.user._id;
+    const page = parseInt(req.query?.page, 10) || 0;
+    const videosPerPage = parseInt(req.query.limit, 10) || 20;
+    
+    const totalVideos = await Engagement.countDocuments({ user: userId, action: "like" });
+    const hasMore = totalVideos > (page + 1) * videosPerPage;
+
+    const likedVideos = await Engagement
+      .find({ user: userId, action: "like" })
+      .sort({ createdAt: -1 })
+      .skip(page * videosPerPage)
+      .limit(videosPerPage)
+      .populate({
+        path: "video",
+        select: "_id thumbnail title duration views createdAt",
+        populate: {
+          path: "owner",
+          select: "_id username"
+        }
+      });
+  
+    return res.status(200).json({
+      message: "Liked videos fetched successfully",
+      likedVideosCount: likedVideos.length,
+      likedVideos: likedVideos,
+      hasMore: hasMore
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error fetching liked vidoes",
+    });
+  }
+};
 
 // Helper functions
 const countEngagements = (videoId, action) =>{
   return Engagement.countDocuments({ video: videoId, action: action });
 }
 
-export { handleEngagement, countEngagements };
+export { handleEngagement, countEngagements, getLikedVideos };
