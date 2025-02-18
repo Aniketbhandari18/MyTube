@@ -126,7 +126,7 @@ const searchResults = async (req, res) =>{
     });
   }
 };
-// needs to be completed
+
 const getVideoById = async (req, res) =>{
   try {
     const { videoId } = req.params;
