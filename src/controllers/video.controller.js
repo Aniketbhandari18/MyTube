@@ -2,6 +2,72 @@ import fs from "fs";
 import { ApiError } from "../utils/ApiError.js";
 import { Video } from "../models/video.model.js"
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
+import { countSubscribers, isSubscribed } from "./subscription.controller.js";
+import { countEngagements, userEngagement } from "./engagement.controller.js";
+
+// needs to be completed
+const getVideoById = async (req, res) =>{
+  try {
+    const { videoId } = req.params;
+    const userId = req.user?._id;
+  
+    // find video
+    const video = await Video.findById(videoId);
+  
+    if (!video){
+      throw new ApiError(400, "Video doesn't exists");
+    }
+  
+    // access details
+    const { title, description, videoFile, thumbnail, owner } =  video;
+  
+    // find owner (one who published the video)
+    const channel = await User.findById(owner);
+  
+    if (!channel){
+      throw new ApiError(400, "Channel doesn't exist anymore");
+    }
+  
+    const { username, avatar } = channel;
+
+    const [subscriberCount, subscribed, likesCount, dislikesCount, engagement] = await Promise.all([
+      countSubscribers(channel._id),
+      userId ? isSubscribed(channel._id, userId) : 0,
+      countEngagements(videoId, "like"),
+      countEngagements(videoId, "dislike"),
+      userId ? userEngagement(videoId, userId): null
+    ]);
+  
+    return res.status(200).json({
+      message: "ok",
+      video: {
+        _id: video._id,
+        title,
+        description,
+        videoFile,
+        thumbnail,
+      },
+      channel: {
+        _id: channel._id,
+        username,
+        avatar,
+        subscriberCount,
+        isSubscribed: !!subscribed
+      },
+      engagement: {
+        likesCount,
+        dislikesCount,
+        engagement
+      }
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
 
 const publishVideo = async (req, res) =>{
   const thumbnailLocalPath = req.files?.thumbnail?.[0].path;
@@ -187,4 +253,4 @@ const incrementView = async (req, res) =>{
   }
 }
 
-export { publishVideo, updateVideo, incrementView, deleteVideo };
+export { publishVideo, updateVideo, incrementView, deleteVideo, getVideoById };
