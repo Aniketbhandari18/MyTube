@@ -6,6 +6,126 @@ import { User } from "../models/user.model.js";
 import { countSubscribers, isSubscribed } from "./subscription.controller.js";
 import { countEngagements, userEngagement } from "./engagement.controller.js";
 
+const searchResults = async (req, res) =>{
+  try {
+    const searchQuery = req.query.search_query?.trim();
+    const userId = req.user?._id;
+  
+    const page = parseInt(req.query.page, 10) || 0;
+    const videosPerPage = 30;
+  
+    const videoResults = await Video.aggregate([
+      {
+        $search: {
+          index: "default",
+          text: {
+            query: searchQuery,
+            path: ["title", "description"],
+            fuzzy: { maxEdits: 2 }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "channel",
+        }
+      },
+      {
+        $unwind: "$channel"
+      },
+      {
+        $project: {
+          "_id": 1,
+          "title": 1,
+          "description": 1,
+          "thumbnail": 1,
+          "duration": 1,
+          "views": 1,
+          "channel._id": 1,
+          "channel.username": 1,
+          "channel.avatar": 1,
+          "createdAt": 1,
+          "score": { $meta: "searchScore" },
+        }
+      },
+      {
+        $sort: { "score": -1 }
+      },
+      {
+        $skip: page * videosPerPage
+      },
+      {
+        $limit: videosPerPage + 1
+      }
+    ]);
+
+    const channelResults = await User.aggregate([
+      {
+        $match: {
+          $text: {$search: searchQuery}
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          avatar: 1,
+          subscribers: 1,
+          createdAt: 1,
+          score: { $meta: "textScore" },
+        },
+      },
+      {
+        $sort: { "score": -1 }
+      },
+      {
+        $limit: 2
+      },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "_id",
+          foreignField: "channel",
+          as: "subscribers",
+        }
+      },
+      {
+        $addFields: {
+          isSubscribed: {
+            $cond: {
+              if: {$in: [userId, "$subscribers.subscriber"]},
+              then: true,
+              else: false
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          subscribers: 0
+        }
+      }
+    ]);
+
+    const hasMore = videoResults.length > videosPerPage;
+    if (hasMore) videoResults.pop();
+  
+    return res.status(200).json({
+      message: "Videos fetched successfully",
+      channelResults,
+      videoResults,
+      hasMore
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error"
+    });
+  }
+};
 // needs to be completed
 const getVideoById = async (req, res) =>{
   try {
@@ -253,4 +373,4 @@ const incrementView = async (req, res) =>{
   }
 }
 
-export { publishVideo, updateVideo, incrementView, deleteVideo, getVideoById };
+export { publishVideo, updateVideo, incrementView, deleteVideo, getVideoById, searchResults };
