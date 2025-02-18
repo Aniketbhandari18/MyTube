@@ -46,6 +46,8 @@ const userSchema = new Schema(
   }
 );
 
+userSchema.index({ username: "text" })
+
 // encrypt password before saving data
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
