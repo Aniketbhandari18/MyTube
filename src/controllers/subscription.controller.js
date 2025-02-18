@@ -137,4 +137,4 @@ const isSubscribed = (channelId, userId) =>{
   return Subscription.exists({ subscriber: userId, channel: channelId });
 }
 
-export { handleSubscription, getSubscribedChannels };
+export { handleSubscription, getSubscribedChannels, countSubscribers, isSubscribed };
