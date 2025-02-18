@@ -94,4 +94,14 @@ const countEngagements = (videoId, action) =>{
   return Engagement.countDocuments({ video: videoId, action: action });
 }
 
-export { handleEngagement, countEngagements, getLikedVideos };
+const userEngagement = async (videoId, userId) =>{
+  const userEngagement = await Engagement.findOne({ user: userId, video: videoId });
+
+  if (!userEngagement){
+    return null;
+  }
+
+  return userEngagement.action;
+};
+
+export { handleEngagement, countEngagements, getLikedVideos, userEngagement };
