@@ -34,3 +34,27 @@ export const verifyJWT = async (req, res, next) => {
     });
   }
 };
+export const optionalAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies?.accessToken || req.header("Authorization")?.split(" ")[1];
+
+    if (!token) {
+      return next();
+    }
+
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    const user = await User.findById(decodedToken?._id).select(
+      "-password -refreshToken"
+    );
+
+    if (user){
+      req.user = user;
+      return next();
+    }
+
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+};
