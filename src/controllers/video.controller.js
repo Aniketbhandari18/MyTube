@@ -6,6 +6,37 @@ import { User } from "../models/user.model.js";
 import { countSubscribers, isSubscribed } from "./subscription.controller.js";
 import { countEngagements, userEngagement } from "./engagement.controller.js";
 
+const homeVideos = async (req, res) =>{
+  try {
+    const page = parseInt(req.query.page, 10) || 0;
+    const videosPerPage = 30;
+  
+    const result = await Video
+      .find({})
+      .sort({ views: -1 })
+      .skip(page * videosPerPage)
+      .limit(videosPerPage + 1)
+      .populate("owner", "_id username avatar");
+  
+    const hasMore = result.length > videosPerPage;
+    if (hasMore) result.pop();
+
+    // shuffle result
+    const shuffledResult = result.sort(() => Math.random() - 0.5);
+  
+    return res.status(200).json({
+      message: "Vidoes fetched successfully",
+      result: shuffledResult,
+      hasMore
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error fetching videos"
+    });
+  }
+};
+
 const searchResults = async (req, res) =>{
   try {
     const searchQuery = req.query.search_query?.trim();
@@ -373,4 +404,4 @@ const incrementView = async (req, res) =>{
   }
 }
 
-export { publishVideo, updateVideo, incrementView, deleteVideo, getVideoById, searchResults };
+export { publishVideo, updateVideo, incrementView, deleteVideo, getVideoById, searchResults, homeVideos };
