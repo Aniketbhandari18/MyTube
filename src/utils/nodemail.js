@@ -9,22 +9,13 @@ const transporter = nodemailer.createTransport({
 });
 
 
-const sendVerificationMail = async (email, verificationCode) =>{
+const sendVerificationMail = async (email, html) =>{
   const mailOptions = {
     from: `"MyTube" <${process.env.SMTP_USER}>`,
     to: email,
     subject: "Email Verification",
-    text: `Your verification code is ${verificationCode}`, // Plain text fallback
-    html: `
-      <div style="font-family: Arial, sans-serif; color: #333;">
-        <h1>Welcome to MyTube!</h1>
-        <p>Thank you for registering. Please verify your email address using the code below:</p>
-        <p style="font-size: 18px; font-weight: bold; color: #4CAF50;">${verificationCode}</p>
-        <p>If you didn't register, please ignore this email.</p>
-        <p>Thank you,</p>
-        <p>The MyTube Team</p>
-      </div>
-    `
+    // text: `Your verification code is ${verificationCode}`, // Plain text fallback
+    html: html
   };
 
   try {

@@ -5,6 +5,7 @@ import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import { sendVerificationMail } from "../utils/nodemail.js";
+import { VERIFICATION_EMAIL_TEMPLATE } from "../utils/emailTemplate.js";
 
 const registerUser = async (req, res) => {
   // const { username, email, password, fullName } = req.body;
@@ -69,7 +70,11 @@ const registerUser = async (req, res) => {
     res.cookie("verificationToken", verificationToken, options);
 
     // send verification email
-    await sendVerificationMail(newUser.email, verificationCode);
+    try {
+      await sendVerificationMail(newUser.email, VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationCode));
+    } catch (error) {
+      throw new ApiError(400, "Error sending verification mail");
+    }
 
     const createdUser = await User.findById(newUser._id).select(
       "-password -refreshToken"
