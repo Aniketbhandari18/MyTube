@@ -7,9 +7,10 @@ import {
   editProfile,
   getUserProfileDetails,
   deleteUserProfile,
+  verifyUser,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT, verifyVerificationToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.route("/register").post(
   ]),
   registerUser
 );
+router.route("/verify").post(verifyVerificationToken, verifyUser);
 
 router.route("/login").post(loginUser);
 

@@ -90,6 +90,51 @@ const registerUser = async (req, res) => {
   }
 };
 
+const verifyUser = async (req, res) =>{
+  try {
+    const { verificationCode } = req.body;
+    const userId = req.user._id;
+  
+    const user = await User.findById(userId);
+  
+    if (!verificationCode){
+      throw new ApiError(400, "Verification code is missing");
+    }
+  
+    if (!user){
+      throw new ApiError(404, "User doesn't exist");
+    }
+  
+    if (user.isVerified){
+      throw new ApiError(409, "User already verified");
+    }
+  
+    if (verificationCode !== user.verificationCode){
+      throw new ApiError(400, "Invalid or expired verification code");
+    }
+
+    if (Date.now() >= user.verificationCodeExpiresAt){
+      throw new ApiError(400, "Verification code expired");
+    }
+  
+    // set user verified
+    user.isVerified = true;
+    user.verificationCode = undefined; // Clear the code
+    user.verificationCodeExpiresAt = undefined; // Clear expiration
+  
+    await user.save();
+
+    return res.status(200).json({
+      message: "User verified successfully"
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     // access details
@@ -505,4 +550,13 @@ const deleteUserProfile = async (req, res) =>{
   }
 };
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, editProfile, getUserProfileDetails, deleteUserProfile };
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  editProfile,
+  getUserProfileDetails,
+  deleteUserProfile,
+  verifyUser 
+};
