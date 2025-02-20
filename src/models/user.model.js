@@ -49,7 +49,7 @@ const userSchema = new Schema(
     },
     verificationCodeExpiresAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
     }
   },
   {
