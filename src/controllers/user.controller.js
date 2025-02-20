@@ -129,6 +129,13 @@ const verifyUser = async (req, res) =>{
   
     await user.save();
 
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    res.clearCookie("verificationToken", options);
+
     return res.status(200).json({
       message: "User verified successfully"
     });
