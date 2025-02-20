@@ -363,6 +363,17 @@ const updateVideo = async (req, res) =>{
 const deleteVideo = async (req, res) =>{
   try {
     const { videoId } = req.params;
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+
+    if (!video){
+      throw new ApiError(404, "Video doesn't exist");
+    }
+
+    if (userId.toString() !== video.owner.toString()){
+      throw new ApiError(403, "You are not authorized to delete this video");
+    }
   
     const deletedVideo = await Video.findByIdAndDelete(videoId);
   

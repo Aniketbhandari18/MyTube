@@ -174,6 +174,11 @@ const loginUser = async (req, res) => {
       );
     }
 
+    // check if user is verified
+    if (!user.isVerified) {
+      throw new ApiError(403, "Account is not verified. Please verify your email before logging in.");
+    }
+
     // match password
     if (!(await user.isPasswordCorrect(password))) {
       throw new ApiError(400, "Incorrect password");
@@ -276,6 +281,11 @@ const refreshAccessToken = async (req, res) => {
     // Check for user
     if (!user) {
       throw new ApiError(404, "User not found");
+    }
+
+    // Check if the user is verified
+    if (!user.isVerified) {
+      throw new ApiError(403, "User is not verified");
     }
 
     if (incomingRefreshToken !== user.refreshToken) {
@@ -514,7 +524,7 @@ const getUserProfileDetails = async (req, res) =>{
     // ]);
   
     // my code without aggregation pipeline
-    const channel = await User.findOne({ username });
+    const channel = await User.findOne({ username, isVerified: true });
   
     if (!channel) {
       throw new ApiError(404, "No such channel exists");

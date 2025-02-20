@@ -22,6 +22,13 @@ export const verifyJWT = async (req, res, next) => {
         message: "User not found",
       });
     }
+    
+    // check if user is verified
+    if (!user.isVerified) {
+      return res.status(403).json({
+        message: "User is not verified. Please verify your email first.",
+      });
+    }
 
     // add user in req object
     req.user = user;
@@ -34,6 +41,7 @@ export const verifyJWT = async (req, res, next) => {
     });
   }
 };
+
 export const optionalAuth = async (req, res, next) => {
   try {
     const token = req.cookies?.accessToken || req.header("Authorization")?.split(" ")[1];
@@ -48,7 +56,7 @@ export const optionalAuth = async (req, res, next) => {
       "-password -refreshToken"
     );
 
-    if (user){
+    if (user?.isVerified){
       req.user = user;
       return next();
     }
