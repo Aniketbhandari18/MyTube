@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
+import { sendVerificationMail } from "../utils/nodemail.js";
 
 const registerUser = async (req, res) => {
   // const { username, email, password, fullName } = req.body;
@@ -39,22 +40,43 @@ const registerUser = async (req, res) => {
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalpath);
 
+    // verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpiresAt = Date.now() + 5 * 60 * 1000;
+
     // create user
     const newUser = await User.create({
       username,
       email,
       password,
       fullName,
+      verificationCode,
+      verificationCodeExpiresAt,
       avatar: avatar?.secure_url || null,
       coverImage: coverImage?.secure_url || null,
     });
+
+    
+    const verificationToken = newUser.generateVerificationToken();
+
+    // store verificationToken in cookies
+    const options = {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000
+    };
+
+    res.cookie("verificationToken", verificationToken, options);
+
+    // send verification email
+    await sendVerificationMail(newUser.email, verificationCode);
 
     const createdUser = await User.findById(newUser._id).select(
       "-password -refreshToken"
     );
 
     return res.status(200).json({
-      message: "User registers successfully",
+      message: "User registered successfully",
       user: createdUser,
     });
   } catch (error) {

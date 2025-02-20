@@ -40,6 +40,17 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+    },
+    verificationCodeExpiresAt: {
+      type: Date,
+      default: Date.now(),
+    }
   },
   {
     timestamps: true,
@@ -88,6 +99,18 @@ userSchema.methods.generateRefreshToken = function () {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
+};
+
+userSchema.methods.generateVerificationToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.VERIFICATION_TOKEN_SECRET,
+    {
+      expiresIn: process.env.VERIFICATION_TOKEN_EXPIRY
+    }
+  )
 };
 
 export const User = model("User", userSchema);
