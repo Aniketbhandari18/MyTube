@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
+import { PASSWORD_RESET_REQUEST_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -35,4 +35,15 @@ const sendVerificationMail = async (email, verificationCode) =>{
   }
 };
 
-export { sendVerificationMail };
+const sendResetPasswordToken = async (email, resetPasswordToken) =>{
+  const subject = "Reset Your Password";
+  const html = PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", `${process.env.CLIENT_URL}/user/reset-password/${resetPasswordToken}`);
+
+  try {
+    await sendMail(email, subject, html);
+  } catch (error) {
+    throw new Error("Failed to send reset-password-token email");
+  }
+}
+
+export { sendVerificationMail, sendResetPasswordToken };

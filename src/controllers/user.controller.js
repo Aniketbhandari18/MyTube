@@ -4,7 +4,8 @@ import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import { sendVerificationMail } from "../utils/nodemail.js";
+import { sendResetPasswordToken, sendVerificationMail } from "../utils/nodemail.js";
+import crypto from "crypto";
 
 const registerUser = async (req, res) => {
   // const { username, email, password, fullName } = req.body;
@@ -143,6 +144,41 @@ const verifyUser = async (req, res) =>{
     return res.status(error.statusCode || 500).json({
       message: error.message || "Internal Server Error"
     });
+  }
+};
+
+const requestPasswordReset = async (req, res) =>{
+  try {
+    const { identifier } = req.body;
+  
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }]
+    });
+  
+    if (!user){
+      throw new ApiError(404, "Account with this username or email doesn't exist");
+    }
+    
+    // store reset-password-token in mongodb
+    const resetPasswordToken = crypto.randomBytes(32).toString("hex");
+
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+
+    await user.save();
+
+    // send email
+    await sendResetPasswordToken(user.email, resetPasswordToken);
+
+    return res.status(200).json({
+      message: "Reset-password-token sent successfully",
+      email: user.email
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Error sending reset-password-token email"
+    })
   }
 };
 
@@ -579,5 +615,6 @@ export {
   editProfile,
   getUserProfileDetails,
   deleteUserProfile,
-  verifyUser 
+  verifyUser,
+  requestPasswordReset
 };

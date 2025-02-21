@@ -49,7 +49,12 @@ const userSchema = new Schema(
     },
     verificationCodeExpiresAt: {
       type: Date,
-      default: Date.now,
+    },
+    resetPasswordToken: {
+      type: String
+    },
+    resetPasswordTokenExpiresAt: {
+      type: Date
     }
   },
   {

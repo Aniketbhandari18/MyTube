@@ -8,6 +8,7 @@ import {
   getUserProfileDetails,
   deleteUserProfile,
   verifyUser,
+  requestPasswordReset,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT, verifyVerificationToken } from "../middlewares/auth.middleware.js";
@@ -28,6 +29,7 @@ router.route("/register").post(
   registerUser
 );
 router.route("/verify").post(verifyVerificationToken, verifyUser);
+router.route("/forgot-password").post(requestPasswordReset);
 
 router.route("/login").post(loginUser);
 
