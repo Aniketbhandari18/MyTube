@@ -1,6 +1,6 @@
 # YouTube-Like Backend
 
-A minimal backend for a YouTube-like platform with user authentication, video management, and subscription handling.
+A minimal backend for a YouTube-like platform featuring user authentication, video management, subscriptions, user engagement, and various other functionalities to enhance the video-sharing experience.
 
 ## Features
 
