@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -8,20 +9,28 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-
-const sendVerificationMail = async (email, html) =>{
+const sendMail = async (email, subject, html) =>{
   const mailOptions = {
     from: `"MyTube" <${process.env.SMTP_USER}>`,
     to: email,
-    subject: "Email Verification",
-    // text: `Your verification code is ${verificationCode}`, // Plain text fallback
+    subject: subject,
     html: html
-  };
+  }
 
   try {
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.log(error);
+    throw new Error("Failed to send mail");
+  }
+}
+
+const sendVerificationMail = async (email, verificationCode) =>{
+  const subject = "Email Verification";
+  const html = VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationCode);
+
+  try {
+    await sendMail(email, subject, html);
+  } catch (error) {
     throw new Error("Failed to send verification email");
   }
 };
