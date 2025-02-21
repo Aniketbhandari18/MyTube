@@ -43,7 +43,7 @@ const registerUser = async (req, res) => {
 
     // verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationCodeExpiresAt = Date.now() + 5 * 60 * 1000;
+    const verificationCodeExpiresAt = Date.now() + 10 * 60 * 1000;
 
     // create user
     const newUser = await User.create({

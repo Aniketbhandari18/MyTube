@@ -63,6 +63,7 @@ const userSchema = new Schema(
 );
 
 userSchema.index({ username: "text" })
+userSchema.index({ "verificationCodeExpiresAt": 1 }, { expireAfterSeconds: 0 });
 
 // encrypt password before saving data
 userSchema.pre("save", async function (next) {
