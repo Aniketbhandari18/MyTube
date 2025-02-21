@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { PASSWORD_RESET_REQUEST_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
+import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -46,4 +46,15 @@ const sendResetPasswordToken = async (email, resetPasswordToken) =>{
   }
 }
 
-export { sendVerificationMail, sendResetPasswordToken };
+const sendResetPasswordSuccessMail = async (email) =>{
+  const subject = "Password Reset Successfully";
+  const html = PASSWORD_RESET_SUCCESS_TEMPLATE;
+
+  try {
+    await sendMail(email, subject, html);
+  } catch (error) {
+    throw new Error("Failed to send password reset successfull mail");
+  }
+};
+
+export { sendVerificationMail, sendResetPasswordToken, sendResetPasswordSuccessMail };

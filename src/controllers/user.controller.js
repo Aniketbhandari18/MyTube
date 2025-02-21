@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import { sendResetPasswordToken, sendVerificationMail } from "../utils/nodemail.js";
+import { sendResetPasswordSuccessMail, sendResetPasswordToken, sendVerificationMail } from "../utils/nodemail.js";
 import crypto from "crypto";
 
 const registerUser = async (req, res) => {
@@ -179,6 +179,43 @@ const requestPasswordReset = async (req, res) =>{
     return res.status(error.statusCode || 500).json({
       message: error.message || "Error sending reset-password-token email"
     })
+  }
+};
+
+const resetPassword = async (req, res) =>{
+  try {
+    const { password } = req.body;
+    const { resetPasswordToken } = req.params;
+  
+    const user = await User.findOne({ 
+      resetPasswordToken,
+      resetPasswordTokenExpiresAt: { $gt: Date.now() }
+     });
+  
+    if (!user){
+      throw new ApiError(400, "Invalid or expired token");
+    }
+  
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpiresAt = undefined;
+  
+    await user.save();
+
+    try {
+      await sendResetPasswordSuccessMail(user.email);
+    } catch (error) {
+      throw new ApiError(500, "Failed to send password reset successfull mail")
+    }
+
+    return res.status(200).json({
+      message: "Password reset successfully"
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
   }
 };
 
@@ -616,5 +653,6 @@ export {
   getUserProfileDetails,
   deleteUserProfile,
   verifyUser,
-  requestPasswordReset
+  requestPasswordReset,
+  resetPassword
 };
