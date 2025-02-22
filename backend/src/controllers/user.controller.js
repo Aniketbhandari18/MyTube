@@ -43,7 +43,7 @@ const registerUser = async (req, res) => {
 
     // verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationCodeExpiresAt = Date.now() + 10 * 60 * 1000;
+    const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // create user
     const newUser = await User.create({
@@ -118,7 +118,7 @@ const verifyUser = async (req, res) =>{
       throw new ApiError(400, "Invalid or expired verification code");
     }
 
-    if (Date.now() >= user.verificationCodeExpiresAt){
+    if (Date.now() >= user.verificationCodeExpiresAt.getTime()){
       throw new ApiError(400, "Verification code expired");
     }
   
