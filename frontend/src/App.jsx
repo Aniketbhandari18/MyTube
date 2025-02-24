@@ -1,6 +1,10 @@
+import SignUpPage from "./pages/SignUpPage";
+
 function App() {
   return (
-    <div>App</div>
+    <div className="font-semibold">
+      <SignUpPage />
+    </div>
   )
 }
 
