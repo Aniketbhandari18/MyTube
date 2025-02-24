@@ -3,12 +3,27 @@ import { useState } from "react";
 import Input from "../components/Input";
 import { User, Mail, Lock } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
+import { userAuthStore } from "../store/authStore";
 
 const SignUpPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const { signup, isLoading, error } = userAuthStore();
+  const navigate = useNavigate();
+
+  const handleSignUp = async (event) =>{
+    event.preventDefault();
+
+    try {
+      await signup(username, email, password, confirmPassword);
+      navigate("/verify-user");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">

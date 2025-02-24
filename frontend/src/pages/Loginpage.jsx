@@ -9,6 +9,20 @@ const LoginPage = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
+  const { login, isLoading, error } = userAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogin = async () =>{
+    console.log("hi");
+
+    try {
+      await login(identifier);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <motion.div
