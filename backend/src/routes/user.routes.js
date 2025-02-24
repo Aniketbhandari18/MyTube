@@ -16,19 +16,7 @@ import { verifyJWT, verifyVerificationToken } from "../middlewares/auth.middlewa
 
 const router = Router();
 
-router.route("/register").post(
-  upload.fields([
-    {
-      name: "avatar",
-      maxCount: 1,
-    },
-    {
-      name: "cover-image",
-      maxCount: 1,
-    },
-  ]),
-  registerUser
-);
+router.route("/register").post(registerUser);
 router.route("/verify").post(verifyVerificationToken, verifyUser);
 router.route("/forgot-password").post(requestPasswordReset);
 router.route("/reset-password/:resetPasswordToken").post(resetPassword);

@@ -8,18 +8,14 @@ import { sendResetPasswordSuccessMail, sendResetPasswordToken, sendVerificationM
 import crypto from "crypto";
 
 const registerUser = async (req, res) => {
-  // const { username, email, password, fullName } = req.body;
+  // const { username, email, password } = req.body;
   const username = req.body.username?.trim().toLowerCase();
   const email = req.body.email?.trim().toLowerCase();
   const password = req.body.password?.trim();
-  const fullName = req.body.fullName?.trim();
-
-  const avatarLocalPath = req.files?.avatar?.[0]?.path;
-  const coverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
 
   try {
     // validation for empty fields
-    if (!username ||!email ||!password ||!fullName){
+    if (!username ||!email ||!password){
       throw new ApiError(400, "All fields are required");
     }
 
@@ -36,11 +32,6 @@ const registerUser = async (req, res) => {
       );
     }
 
-    // handle images
-    // upload on cloudinary
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
-    const coverImage = await uploadOnCloudinary(coverImageLocalpath);
-
     // verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
@@ -50,11 +41,8 @@ const registerUser = async (req, res) => {
       username,
       email,
       password,
-      fullName,
       verificationCode,
       verificationCodeExpiresAt,
-      avatar: avatar?.secure_url || null,
-      coverImage: coverImage?.secure_url || null,
     });
 
     
@@ -89,9 +77,6 @@ const registerUser = async (req, res) => {
     return res.status(error.statusCode || 500).json({
       message: error.message || "Error registering user",
     });
-  } finally {
-    if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
-    if (coverImageLocalpath) fs.unlinkSync(coverImageLocalpath);
   }
 };
 
@@ -394,7 +379,7 @@ const refreshAccessToken = async (req, res) => {
 
 const editProfile = async (req, res) => {
   const newUsername = req.body.newUsername?.trim().toLowerCase();
-  const { newFullName, oldPassword, newPassword } = req.body;
+  const { oldPassword, newPassword } = req.body;
   const newAvatarLocalPath = req.files?.avatar?.[0]?.path;
   const newCoverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
 
@@ -416,7 +401,6 @@ const editProfile = async (req, res) => {
     // check for atleast one field
     if (
       !newUsername &&
-      !newFullName &&
       !newAvatarLocalPath &&
       !newCoverImageLocalpath &&
       !oldPassword &&
@@ -432,7 +416,7 @@ const editProfile = async (req, res) => {
       throw new ApiError(404, "User not found");
     }
 
-    const { username, fullName, avatar, coverImage } = user;
+    const { username, avatar, coverImage } = user;
 
     // update username
     if (newUsername) {
@@ -446,18 +430,6 @@ const editProfile = async (req, res) => {
       }
 
       user.username = newUsername;
-    }
-
-    // update fullname
-    if (newFullName) {
-      if (newFullName === fullName) {
-        throw new ApiError(
-          400,
-          "New fullName cannot be same as previous fullName"
-        );
-      }
-
-      user.fullName = newFullName;
     }
 
     // update password
@@ -516,7 +488,6 @@ const editProfile = async (req, res) => {
       message: "Profile updated succesfully",
       user: {
         username: user.username,
-        fullName: user.fullName,
         avatar: user.avatar,
         coverImage: user.coverImage,
       },
@@ -584,7 +555,6 @@ const getUserProfileDetails = async (req, res) =>{
     //   {
     //     $project: {
     //       username: 1,
-    //       fullName: 1,
     //       avatar: 1,
     //       coverImage: 1,
     //       subscriberCount: 1,
@@ -612,7 +582,6 @@ const getUserProfileDetails = async (req, res) =>{
       user: {
         _id: channel._id,
         username: channel.username,
-        fullName: channel.fullName,
         avatar: channel.avatar,
         coverImage: channel.coverImage,
         subscriberCount: subscriberCount,

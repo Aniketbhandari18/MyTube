@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 
 import bcryptjs from "bcryptjs"; // for encryption
 import jwt from "jsonwebtoken";
@@ -24,12 +24,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-    },
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
     },
     avatar: {
       type: String, // third party service url
@@ -85,7 +79,6 @@ userSchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
       username: this.username,
-      fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
