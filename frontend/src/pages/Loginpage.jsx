@@ -59,7 +59,7 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <div className={`mt-[-20px] mb-1.5 ${ error ? "flex justify-between" : "text-right"}`}>
-            { error && <p className="mt-0.5 text-red-500 text-sm">{"*" + error}</p> }
+            { error && <p className="mt-0.5 text-red-500 font-semibold text-sm">{"*" + error}</p> }
             <p>
             <Link 
               to={"/forgot-password"}
