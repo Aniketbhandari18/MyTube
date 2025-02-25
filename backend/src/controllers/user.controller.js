@@ -25,7 +25,7 @@ const registerUser = async (req, res) => {
       $or: [{ username}, { email }], 
     });
 
-    if (existingUser) {
+    if (existingUser && existingUser.isVerified) {
       throw new ApiError(
         400,
         "User with this email or username already exists"
@@ -35,6 +35,31 @@ const registerUser = async (req, res) => {
     // verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // resend otp if not verified
+    if (existingUser && !existingUser.isVerified){
+      await sendVerificationMail(existingUser.email, verificationCode);
+      existingUser.verificationCode = verificationCode;
+      existingUser.verificationCodeExpiresAt = verificationCodeExpiresAt;
+
+      await existingUser.save();
+
+      // Generate new verification JWT
+      const verificationToken = existingUser.generateVerificationToken();
+
+      // Store JWT in httpOnly cookies
+      res.cookie("verificationToken", verificationToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      });
+      
+      return res.status(200).json({
+        message: "Email already registered. New verification token sent",
+        user: existingUser,
+        isNewUser: false
+      });
+    }
 
     // create user
     const newUser = await User.create({
@@ -71,6 +96,7 @@ const registerUser = async (req, res) => {
     return res.status(200).json({
       message: "User registered successfully",
       user: createdUser,
+      isNewUser: true
     });
   } catch (error) {
     console.log(error.message);
