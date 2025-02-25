@@ -27,7 +27,7 @@ const LoginPage = () => {
     } catch (err) {
       if (err.response.status === 403){
         toast.error("Please verify your email to login");
-        navigate("/verify-user");
+        navigate("/verify");
       }
       console.log(err);
     }

@@ -28,8 +28,8 @@ const SignUpPage = () => {
         toast.success("Account created successfully. Please verify your email to login");
       }
       else toast.success("Verification email sent. Please check your mail");
-      
-      navigate("/verify-user");
+
+      navigate("/verify");
     } catch (err) {
       console.log(err);
     }
