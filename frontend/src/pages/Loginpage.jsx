@@ -1,25 +1,34 @@
 import { motion } from "framer-motion"
 import Input from "../components/Input";
 import { Link, useNavigate } from "react-router-dom"
-import { useState } from "react";
-import { User, Lock } from "lucide-react";
-import { userAuthStore } from "../store/authStore";
+import { useEffect, useState } from "react";
+import { User, Lock, Loader } from "lucide-react";
+import { useAuthStore } from "../store/authStore";
+import { toast } from "react-hot-toast"
 
 const LoginPage = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login, isLoading, error } = userAuthStore();
+  const { login, isLoading, error, setError } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleLogin = async () =>{
-    console.log("hi");
+  useEffect(() =>{
+    setError(null);
+  }, [identifier, password])
+
+  const handleLogin = async (event) =>{
+    event.preventDefault();
 
     try {
-      await login(identifier);
+      await login(identifier, password);
       navigate("/");
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      if (err.response.status === 403){
+        toast.error("Please verify your email to login");
+        navigate("/verify-user");
+      }
+      console.log(err);
     }
   }
 
@@ -49,7 +58,9 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className="text-right mt-[-20px] mb-1.5">
+          <div className={`mt-[-20px] mb-1.5 ${ error ? "flex justify-between" : "text-right"}`}>
+            { error && <p className="mt-0.5 text-red-500 text-sm">{"*" + error}</p> }
+            <p>
             <Link 
               to={"/forgot-password"}
               className="text-blue-500 text-sm"
@@ -57,14 +68,16 @@ const LoginPage = () => {
               Forgot password
             </Link>
           </p>
+          </div>
 
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             transition={{ duration: 0.02 }}
             className="w-full p-1.5 mt-4 mb-1.5 rounded-sm cursor-pointer text-white bg-black transition duration-200"
+            disabled={ isLoading }
           >
-            Sign in
+            { isLoading ? <Loader className="animate-spin w-full [animation-duraion:1.3s]" />: "Sign in" }
           </motion.button>
         </form>
         <p className="text-center text-sm text-gray-700">
