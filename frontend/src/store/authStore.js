@@ -38,4 +38,8 @@ export const useAuthStore = create((set) => ({
       throw err;
     }
   },
+
+  setError: (err) =>{
+    set({ error: err });
+  },
 }));
