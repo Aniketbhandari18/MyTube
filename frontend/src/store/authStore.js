@@ -19,6 +19,7 @@ export const useAuthStore = create((set) => ({
       const response = await axios.post(`${API_BASE_URL}/register`, { username, email, password, confirmPassword });
 
       set({ user: response.data.user, isAuthenticated: false, isLoading: false });
+      return response;
     } catch (err) {
       set({ error: err.response.data.message || "Error signing up", isLoading: false });
       throw err;
@@ -32,6 +33,7 @@ export const useAuthStore = create((set) => ({
       const response = await axios.post(`${API_BASE_URL}/login`, { identifier, password });
 
       set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+      return response;
     } catch (err) {
       console.log(err);
       set({ error: err.response.data.message || "Error loggin in", isLoading: false });

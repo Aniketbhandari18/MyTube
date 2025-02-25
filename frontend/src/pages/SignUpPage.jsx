@@ -12,7 +12,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { signup, isLoading, error, setError } = useAuthStore();
+  const { user, signup, isLoading, error, setError } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() =>{
@@ -23,8 +23,12 @@ const SignUpPage = () => {
     event.preventDefault();
 
     try {
-      await signup(username, email, password, confirmPassword);
-      toast.success("Account created successfully. Please verify your email to login");
+      const response = await signup(username, email, password, confirmPassword);
+      if (response.data.isNewUser){
+        toast.success("Account created successfully. Please verify your email to login");
+      }
+      else toast.success("Verification email sent. Please check your mail");
+      
       navigate("/verify-user");
     } catch (err) {
       console.log(err);
