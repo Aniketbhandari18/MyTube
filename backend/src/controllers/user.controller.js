@@ -613,6 +613,30 @@ const deleteUserProfile = async (req, res) =>{
   }
 };
 
+const checkAuth = async (req, res) =>{
+  try {
+    if (!req.user){
+      throw new ApiError(400, "User not found");
+    }
+  
+    const user = await User.findById(req.user._id);
+  
+    if (!user){
+      throw new ApiError(404, "User not found");
+    }
+  
+    return res.status(200).json({
+      message: "User fetched successfully",
+      user
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -623,5 +647,6 @@ export {
   deleteUserProfile,
   verifyUser,
   requestPasswordReset,
-  resetPassword
+  resetPassword,
+  checkAuth
 };
