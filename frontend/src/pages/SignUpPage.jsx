@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../components/Input";
-import { User, Mail, Lock } from "lucide-react"
+import { User, Mail, Lock, Loader } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
-import { userAuthStore } from "../store/authStore";
+import { useAuthStore } from "../store/authStore";
+import { toast } from "react-hot-toast";
 
 const SignUpPage = () => {
   const [username, setUsername] = useState("");
@@ -11,17 +12,22 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { signup, isLoading, error } = userAuthStore();
+  const { signup, isLoading, error, setError } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() =>{
+    if (error) setError(null);
+  }, [username, email, password, confirmPassword]);
 
   const handleSignUp = async (event) =>{
     event.preventDefault();
 
     try {
       await signup(username, email, password, confirmPassword);
+      toast.success("Account created successfully. Please verify your email to login");
       navigate("/verify-user");
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -68,13 +74,18 @@ const SignUpPage = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
+          <p className="text-red-500 font-semibold text-sm mt-[-20px]">
+            { error ? "*" + error: "" }
+          </p>
+
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             transition={{ duration: 0.02 }}
-            className="w-full p-1.5 mt-4 mb-1.5 rounded-sm cursor-pointer text-white bg-black transition duration-200"
+            className="w-full p-1.5 mt-4 mb-1.5 font-semibold rounded-sm cursor-pointer text-white bg-black transition duration-200"
+            disabled={ isLoading }
           >
-            Sign Up
+            {isLoading ? <Loader className="animate-spin w-full [animation-duration:1.3s]" />: "Sign Up"}
           </motion.button>
         </form>
         <p className="text-center text-sm text-gray-700">
