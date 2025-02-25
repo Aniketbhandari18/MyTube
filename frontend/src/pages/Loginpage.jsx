@@ -22,6 +22,7 @@ const LoginPage = () => {
 
     try {
       await login(identifier, password);
+      toast.success("Logged in successfully");
       navigate("/");
     } catch (err) {
       if (err.response.status === 403){
@@ -74,7 +75,7 @@ const LoginPage = () => {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             transition={{ duration: 0.02 }}
-            className="w-full p-1.5 mt-4 mb-1.5 rounded-sm cursor-pointer text-white bg-black transition duration-200"
+            className="w-full p-1.5 mt-4 mb-1.5 rounded-sm cursor-pointer text-white bg-black transition duration-200 font-semibold"
             disabled={ isLoading }
           >
             { isLoading ? <Loader className="animate-spin w-full [animation-duraion:1.3s]" />: "Sign in" }
