@@ -77,7 +77,8 @@ const registerUser = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "None"
     };
 
     res.cookie("verificationToken", verificationToken, options);
@@ -143,6 +144,7 @@ const verifyUser = async (req, res) =>{
     const options = {
       httpOnly: true,
       secure: true,
+      sameSite: "None"
     };
 
     res.clearCookie("verificationToken", options);
@@ -283,6 +285,7 @@ const loginUser = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      sameSite: "None"
     };
 
     return res
@@ -329,6 +332,7 @@ const logoutUser = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      sameSite: "None"
     };
 
     return res
@@ -386,6 +390,7 @@ const refreshAccessToken = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      sameSite: "None"
     };
 
     return res
