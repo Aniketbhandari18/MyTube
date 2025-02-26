@@ -31,6 +31,7 @@ const SignUpPage = () => {
 
       navigate("/verify");
     } catch (err) {
+      toast.error(err.response.data.message || "Error signing up");
       console.log(err);
     }
   }
@@ -38,8 +39,8 @@ const SignUpPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <motion.div
-        initial={{ opacity: 0, y: 30}}
-        animate={{ opacity: 1, y: 0}}
+        initial={{ opacity: 0, y: 30, scale: .9}}
+        animate={{ opacity: 1, y: 0, scale: 1}}
         transition={{ duration: .5 }}
         className="max-w-sm w-full bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-xl py-4 pb-6 px-8"
       >
@@ -77,10 +78,6 @@ const SignUpPage = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-
-          <p className="text-red-500 font-semibold text-sm mt-[-20px]">
-            { error ? "*" + error: "" }
-          </p>
 
           <motion.button
             whileHover={{ scale: 1.01 }}

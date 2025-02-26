@@ -27,8 +27,10 @@ const LoginPage = () => {
     } catch (err) {
       if (err.response.status === 403){
         toast.error("Please verify your email to login");
-        navigate("/verify");
+        return navigate("/verify");
       }
+
+      toast.error(err.response.data.message || "Error logging in");
       console.log(err);
     }
   }
@@ -36,12 +38,12 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <motion.div
-        initial={{ opacity: 0, y: 30}}
-        animate={{ opacity: 1, y: 0}}
+        initial={{ opacity: 0, y: 30, scale: .9}}
+        animate={{ opacity: 1, y: 0, scale: 1}}
         transition={{ duration: .5 }}
         className="max-w-sm w-full bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-xl py-4 pb-6 px-8"
       >
-        <h2 className="text-3xl text-center font-bold mb-6">Create Account</h2>
+        <h2 className="text-3xl text-center font-bold mb-6">Sign In</h2>
 
         <form onSubmit={ handleLogin }>
           <Input
@@ -59,9 +61,8 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <div className={`mt-[-20px] mb-1.5 ${ error ? "flex justify-between" : "text-right"}`}>
-            { error && <p className="mt-0.5 text-red-500 font-semibold text-sm">{"*" + error}</p> }
-            <p>
+
+          <p className="mt-[-20px] mb-1.5 text-right">
             <Link 
               to={"/forgot-password"}
               className="text-blue-500 text-sm"
@@ -69,7 +70,6 @@ const LoginPage = () => {
               Forgot password
             </Link>
           </p>
-          </div>
 
           <motion.button
             whileHover={{ scale: 1.01 }}
@@ -78,7 +78,7 @@ const LoginPage = () => {
             className="w-full p-1.5 mt-4 mb-1.5 rounded-sm cursor-pointer text-white bg-black transition duration-200 font-semibold"
             disabled={ isLoading }
           >
-            { isLoading ? <Loader className="animate-spin w-full [animation-duraion:1.3s]" />: "Sign in" }
+            { isLoading ? <Loader className="animate-spin w-full [animation-duration:1.3s]" />: "Sign in" }
           </motion.button>
         </form>
         <p className="text-center text-sm text-gray-700">
