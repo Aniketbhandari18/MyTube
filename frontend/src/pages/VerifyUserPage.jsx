@@ -1,11 +1,26 @@
 import { motion } from "framer-motion";
 import { Loader } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useEffect, useRef, useState } from "react";
 
 const VerifyUserPage = () => {
+  const [isLeaving, setIsLeaving] = useState(false);
+
+  const location = useLocation();
+  const from = location.state?.from;
+
+  const pageAnimation = (from === "signup") ? {
+    initial: { opacity: 0, x: 450, scale: .9},
+    animate: isLeaving ? { x: -450, scale: .9 } :{ opacity: 1, x: 0, scale: 1},
+    transition: { duration: .3 },
+  }: {
+    initial: { opacity: 0, x: "-100vw", scale: .9},
+    animate: isLeaving ? { x: -450, scale: .9 } :{ opacity: 1, x: 0, scale: 1},
+    transition: { duration: .3 },
+  }
+
   const [currIdx, setCurrIdx] = useState(0);
   const [code, setCode] = useState(Array(6).fill(""));
   const inputRef = useRef([]);
@@ -64,7 +79,11 @@ const VerifyUserPage = () => {
       await verifyUser(verificationCode);
       toast.success("Email verified successfully. You can now login");
 
-      navigate("/login");
+      setIsLeaving(true);
+
+      setTimeout(() => {
+        navigate("/login", { state: { from: "verify" } });
+      }, 300);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message || "Error verifying email");
@@ -74,9 +93,7 @@ const VerifyUserPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <motion.div
-        initial={{ opacity: 0, y: 30, scale: .9}}
-        animate={{ opacity: 1, y: 0, scale: 1}}
-        transition={{ duration: .5 }}
+        {...pageAnimation}
         className="max-w-sm w-full bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-xl py-4 pb-6 px-8"
       >
         <h2 className="text-3xl text-center font-bold mb-3">Verify Your Email</h2>

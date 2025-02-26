@@ -7,6 +7,8 @@ import { useAuthStore } from "../store/authStore";
 import { toast } from "react-hot-toast";
 
 const SignUpPage = () => {
+  const [isLeaving, setIsLeaving] = useState(false);
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,8 +30,11 @@ const SignUpPage = () => {
         toast.success("Account created successfully. Please verify your email to login");
       }
       else toast.success("Verification email sent. Please check your mail");
+      setIsLeaving(true);
 
-      navigate("/verify");
+      setTimeout(() =>{
+        navigate("/verify", { state: { from: "signup" } });
+      }, 300)
     } catch (err) {
       toast.error(err.response.data.message || "Error signing up");
       console.log(err);
@@ -40,8 +45,8 @@ const SignUpPage = () => {
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <motion.div
         initial={{ opacity: 0, y: 30, scale: .9}}
-        animate={{ opacity: 1, y: 0, scale: 1}}
-        transition={{ duration: .5 }}
+        animate={isLeaving ? { opacity: 0, x: -450, scale: .9 } :{ opacity: 1, y: 0, scale: 1}}
+        transition={isLeaving ? {duration: .3} :{ duration: .5 }}
         className="max-w-sm w-full bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-xl py-4 pb-6 px-8"
       >
         <h2 className="text-3xl text-center font-bold mb-6">Create Account</h2>
