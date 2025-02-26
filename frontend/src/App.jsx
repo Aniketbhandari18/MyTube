@@ -2,7 +2,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast"
 
 import SignUpPage from "./pages/SignUpPage";
-import LoginPage from "./pages/loginPage";
+import LoginPage from "./pages/Loginpage";
+import VerifyUserPage from "./pages/VerifyUserPage";
 
 function Home(){
   return <div>hi</div>
@@ -27,11 +28,17 @@ function App() {
           path="/login"
           element={ <LoginPage /> }
         />
+        
+        <Route 
+          path="/verify"
+          element={ <VerifyUserPage />}
+        />
 
         <Route 
           path="*"
           element={ <Navigate to='/' replace /> }
         />
+
       </Routes>
     </>
   )
