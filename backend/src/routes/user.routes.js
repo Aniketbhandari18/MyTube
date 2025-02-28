@@ -23,6 +23,7 @@ router.route("/forgot-password").post(requestPasswordReset);
 router.route("/reset-password/:resetPasswordToken").post(resetPassword);
 
 router.route("/login").post(loginUser);
+router.route("/check-auth").get(verifyJWT, checkAuth);
 
 router.route("/:username").get(getUserProfileDetails);
 
@@ -45,6 +46,5 @@ router.route("/edit-profile").patch(
 );
 router.route("/delete-profile").delete(verifyJWT, deleteUserProfile);
 
-router.route("/check-auth").get(verifyJWT, checkAuth);
 
 export default router;
