@@ -1,10 +1,11 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast"
-import { Link } from "react-router-dom";
-
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/Loginpage";
 import VerifyUserPage from "./pages/VerifyUserPage";
+import LoadingSpinner from "./components/LoadingSpinner";
+import { useEffect } from "react";
+import { useAuthStore } from "./store/authStore";
 
 function Home(){
   return <div className="min-h-screen bg-gray-100">
@@ -17,7 +18,25 @@ function Home(){
   </div>
 }
 
+const RedirectAuthenticatedUser = ({ children }) =>{
+  const { isAuthenticated } = useAuthStore();
+
+  if (isAuthenticated){
+    return <Navigate to="/" replace />
+  }
+
+  return children;
+}
+
 function App() {
+  const { isCheckingAuth, checkAuth } = useAuthStore();
+
+  useEffect(() =>{
+    checkAuth();
+  }, []);
+
+  if (isCheckingAuth) return <LoadingSpinner />
+
   return (
     <>
       <Toaster />
@@ -29,17 +48,23 @@ function App() {
 
         <Route 
           path="/register"
-          element={ <SignUpPage /> }
+          element={ <RedirectAuthenticatedUser>
+            <SignUpPage />
+          </RedirectAuthenticatedUser> }
         />
 
         <Route 
           path="/login"
-          element={ <LoginPage /> }
+          element={ <RedirectAuthenticatedUser>
+            <LoginPage />
+          </RedirectAuthenticatedUser> }
         />
         
         <Route 
           path="/verify"
-          element={ <VerifyUserPage />}
+          element={ <RedirectAuthenticatedUser>
+            <VerifyUserPage />
+          </RedirectAuthenticatedUser> }
         />
 
         <Route 
