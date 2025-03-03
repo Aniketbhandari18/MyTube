@@ -66,6 +66,15 @@ export const useAuthStore = create((set) => ({
       return response;
     } catch (err) {
       console.log(err);
+      try {
+        const response = await axios.post(`${API_BASE_URL}/refresh-token`);
+
+        set({ user: response.data.user, isCheckingAuth: false, isAuthenticated: true });
+      } catch (err) {
+        console.log(err);
+        set({ isCheckingAuth: false });
+      }
+
       set({ isCheckingAuth: false });
     }
   },
