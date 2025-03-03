@@ -6,17 +6,7 @@ import VerifyUserPage from "./pages/VerifyUserPage";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
-
-function Home(){
-  return <div className="min-h-screen bg-gray-100">
-    <h1 className="text-center font-bold text-4xl mb-80">Home page</h1>
-    <div className="bg-gray-100 flex justify-center items-center">
-      <button className="py-2 px-4 bg-black text-white rounded-md">
-        <Link to="/register">Sign Up</Link>
-      </button>
-    </div>
-  </div>
-}
+import HomePage from "./pages/HomePage";
 
 const RedirectAuthenticatedUser = ({ children }) =>{
   const { isAuthenticated } = useAuthStore();
@@ -43,7 +33,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={ <Home /> }
+          element={ <HomePage /> }
         />
 
         <Route 
