@@ -290,8 +290,8 @@ const loginUser = async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, {...options, maxAge: 24 * 60 * 60 * 1000})
+      .cookie("refreshToken", refreshToken, {...options, maxAge: 7 * 24 * 60 * 60 * 1000})
       .json({
         message: "User logged in successfully",
         user: loggedInUser,
@@ -395,8 +395,8 @@ const refreshAccessToken = async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", newAccessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("accessToken", newAccessToken, {...options, maxAge: 24 * 60 * 60 * 1000})
+      .cookie("refreshToken", newRefreshToken, {...options, maxAge: 7 * 24 * 60 * 60 * 1000})
       .json({
         message: "AccessToken refreshed successfully",
       });
