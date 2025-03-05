@@ -38,7 +38,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div ref={sidebarRef} className={`fixed top-0 left-0 h-full bg-gray-50 shadow-xl w-20 p-4 pt-50 ${isExpanded ? "w-60" : "w-20"} duration-200 border-r-[.02rem] border-gray-200`}>
+    <div ref={sidebarRef} className={`fixed top-0 left-0 h-full bg-gray-50 shadow-xl sm:p-4 pt-50 sm:pt-50 ${isExpanded ? "w-60 p-2" : "w-16 sm:w-20 p-2"} duration-200 border-r-[.02rem] border-gray-200`}>
 
       <button onClick={handleExpand} className="absolute top-78 -right-3 rounded-full bg-gray-600 shadow-2xl cursor-pointer">
         <ChevronRight className={`size-6 text-white transition-transform duration-300 ${ isExpanded && "rotate-180" }`} />
@@ -69,11 +69,11 @@ const Sidebar = () => {
 const SidebarItem = ({ icon: Icon, text, isExpanded, tooltip, to }) =>{
   return (
     <NavLink to={to} className={({ isActive }) => `${!isExpanded && "group"} relative flex items-center w-full py-2 px-3 rounded-md cursor-pointer mb-3 ${isActive ? "bg-gray-300": "hover:bg-gray-200"}`}>
-      <Icon className={`size-6`} />
+      <Icon className={`size-6 shrink-0`} />
 
       { isExpanded && <span className="font-semibold text-md ml-2 whitespace-nowrap">{text}</span> }
 
-      <span className="duration-300 ml-6 pointer-events-none opacity-0 absolute left-6 top-2 py-1 px-2 rounded-md bg-gray-600 whitespace-nowrap text-white group-hover:left-full group-hover:opacity-100 group-hover:inline">{tooltip}</span>
+      <span className="duration-300 ml-6 pointer-events-none opacity-0 absolute left-6 top-2 py-1 px-2 rounded-md bg-gray-800 whitespace-nowrap text-white group-hover:left-full group-hover:opacity-100 group-hover:inline">{tooltip}</span>
 
       {/* <span 
         className={`ml-2 font-semibold text-md overflow-hidden transition-all duration-700 
