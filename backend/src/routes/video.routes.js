@@ -13,7 +13,7 @@ import { verifyJWT, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/homeVidoes").get(homeVideos);
+router.route("/homeVideos").get(homeVideos);
 router.route("/results").get(optionalAuth, searchResults);
 router.route("/:videoId").get(optionalAuth, getVideoById);
 router.route("/publish").post(
