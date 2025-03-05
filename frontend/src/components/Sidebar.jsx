@@ -38,7 +38,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div ref={sidebarRef} className={`fixed top-0 left-0 h-full bg-gray-50 shadow-xl sm:p-4 pt-50 sm:pt-50 ${isExpanded ? "w-60 p-2" : "w-16 sm:w-20 p-2"} duration-200 border-r-[.02rem] border-gray-200`}>
+    <div ref={sidebarRef} className={`fixed top-0 left-0 h-full bg-white shadow-xl sm:p-4 pt-50 sm:pt-50 ${isExpanded ? "w-60 p-2" : "w-16 sm:w-20 p-2"} duration-200 border-r-[.02rem] border-gray-200`}>
 
       <button onClick={handleExpand} className="absolute top-78 -right-3 rounded-full bg-gray-600 shadow-2xl cursor-pointer">
         <ChevronRight className={`size-6 text-white transition-transform duration-300 ${ isExpanded && "rotate-180" }`} />

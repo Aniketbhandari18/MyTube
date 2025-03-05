@@ -11,7 +11,7 @@ const NavBar = () => {
   const { user, isAuthenticated } = useAuthStore();
 
   return (
-    <div className="absolute left-0 right-0 top-0 bg-gray-100 flex justify-between py-4 pl-16 sm:pl-24 pr-6 shadow-md">
+    <div className="absolute left-0 right-0 top-0 bg-white flex justify-between py-4 pl-16 sm:pl-24 pr-6 shadow-md">
       <div className="hidden sm:flex shrink-0 justify-between items-center">
         <img className="size-6 md:size-8" src={ videoIcon } />
         <img className="bg-transparent w-[150px] md:w-[170px]" src={ logo } />
