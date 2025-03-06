@@ -1,3 +1,6 @@
+import logo from "../assets/logo.png"
+import videoIcon from "../assets/video-icon.png"
+
 import { ChevronRight, History, Home, List, LogOut, ThumbsUp, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -43,6 +46,11 @@ const Sidebar = () => {
       <button onClick={handleExpand} className="absolute top-78 -right-3 rounded-full bg-gray-600 shadow-2xl cursor-pointer">
         <ChevronRight className={`size-6 text-white transition-transform duration-300 ${ isExpanded && "rotate-180" }`} />
       </button>
+
+      <div className="sm:hidden absolute flex top-4 left-3.5">
+        <img className="size-9" src={videoIcon}/>
+        <img className={`${isExpanded && "inline-block"} hidden bg-transparent w-[170px]`} src={logo}/>
+      </div>
 
       <SidebarItem icon={Home} text="Home" isExpanded={isExpanded} tooltip="Home" to="/" />
       <SidebarItem icon={User} text="You" isExpanded={isExpanded} tooltip="You" to="/you" />
