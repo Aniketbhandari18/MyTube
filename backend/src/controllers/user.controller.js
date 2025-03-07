@@ -6,6 +6,7 @@ import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js
 import jwt from "jsonwebtoken";
 import { sendResetPasswordSuccessMail, sendResetPasswordToken, sendVerificationMail } from "../utils/nodemail.js";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 const registerUser = async (req, res) => {
   // const { username, email, password } = req.body;
@@ -537,10 +538,10 @@ const editProfile = async (req, res) => {
 
 const getUserProfileDetails = async (req, res) =>{
   try {
-    const username = req.params.username?.trim().toLowerCase();
+    const channelIdentifier = req.params.channelIdentifier?.trim().toLowerCase();
   
-    if (!username){
-      throw new ApiError(400, "username not provided");
+    if (!channelIdentifier){
+      throw new ApiError(400, "username or id not provided");
     }
   
     // code with aggregaton pipeline
@@ -597,7 +598,12 @@ const getUserProfileDetails = async (req, res) =>{
     // ]);
   
     // my code without aggregation pipeline
-    const channel = await User.findOne({ username, isVerified: true });
+    const isValidId = mongoose.Types.ObjectId.isValid(channelIdentifier);
+    
+    const channel = await User.findOne({
+      $or: [{ username: channelIdentifier}, isValidId ? { _id: channelIdentifier }: {}],
+      isVerified: true
+    });
   
     if (!channel) {
       throw new ApiError(404, "No such channel exists");

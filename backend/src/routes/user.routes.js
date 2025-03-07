@@ -25,7 +25,7 @@ router.route("/reset-password/:resetPasswordToken").post(resetPassword);
 router.route("/login").post(loginUser);
 router.route("/check-auth").get(verifyJWT, checkAuth);
 
-router.route("/:username").get(getUserProfileDetails);
+router.route("/:channelIdentifier").get(getUserProfileDetails);
 
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser);
