@@ -6,20 +6,18 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
 import HomeVideoCard from "../components/HomeVideoCard";
+import SubscribeButton from "../components/SubscribeButton";
 
-const ChannelDesc = ({ isOwner, description }) =>{
+const ChannelDesc = ({ isOwner, description, isSubscribed, setIsSubscribed, channelId }) =>{
   return (
     <>
       <p className="text-sm sm:text-sm md:text-[16px] font-semibold text-gray-600 mb-1 sm:mb-2">{description}</p>
 
-      {
-        !isOwner ? <button className="px-4 py-2 bg-black text-white rounded-3xl font-semibold cursor-pointer">
-          Subscribe
-        </button>:
+      { !isOwner ? (<SubscribeButton isSubscribed={isSubscribed} setIsSubscribed={setIsSubscribed} channelId={channelId} />): (
         <button className="text-sm sm:text-sm px-4 py-2 bg-black text-white rounded-3xl font-semibold cursor-pointer">
           Customize Profile
         </button>
-      }
+      ) }
     </>
   );
   
@@ -31,7 +29,8 @@ const ChannelPage = () => {
 
   const [channel, setChannel] = useState({});
   const [isOwner, setIsOwner] = useState(false);
-  const [vidoes, setVideos] = useState([]);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -44,10 +43,8 @@ const ChannelPage = () => {
         console.log("channelIdentifier:", channelIdentifier);
         console.log("userId:", channelResponse.data.user._id);
         setChannel(channelResponse.data.user);
-
-        if (channelResponse.data.user._id === user._id){
-          setIsOwner(true);
-        }
+        setIsSubscribed(channelResponse.data.user.isSubscribed);
+        setIsOwner(channelResponse.data.user._id === user?._id);
 
 
         const videoResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/video/channel/${channelResponse.data.user._id}`);
@@ -61,7 +58,7 @@ const ChannelPage = () => {
         setIsLoading(false);
       }
     })()
-  }, [])
+  }, [channelIdentifier, user?._id])
 
   if (isLoading) return <LoadingSpinner />
 
@@ -85,15 +82,15 @@ const ChannelPage = () => {
           </div>
           <div className="channel-details">
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold md:mb-2">{channel.username}</h1>
-            <p className="text-sm md:text-[16px] text-gray-600">{channel.subscriberCount} subscribers &#8226; {vidoes.length} videos</p>
+            <p className="text-sm md:text-[16px] text-gray-600">{channel.subscriberCount} subscribers &#8226; {videos.length} videos</p>
             <div className="hidden sm:block">
-              <ChannelDesc isOwner={isOwner} description={channel.description} />
+              <ChannelDesc isOwner={isOwner} description={channel.description} isSubscribed={isSubscribed} setIsSubscribed={setIsSubscribed} channelId={channel._id} />
             </div>
           </div>
         </div>
 
           <div className="sm:hidden mt-2 ml-2">
-            <ChannelDesc isOwner={isOwner} description={channel.description} />
+            <ChannelDesc isOwner={isOwner} description={channel.description} isSubscribed={isSubscribed} setIsSubscribed={setIsSubscribed} channelId={channel._id} />
           </div>
       </div>
 
@@ -101,7 +98,7 @@ const ChannelPage = () => {
         <div className="w-full h-px bg-gray-300 mb-4"></div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-          { vidoes.map(({ _id, thumbnail, title, owner, duration, views, createdAt }) =>(
+          { videos.map(({ _id, thumbnail, title, duration, views, createdAt }) =>(
             <HomeVideoCard 
               key={_id} 
               _id={_id} 
