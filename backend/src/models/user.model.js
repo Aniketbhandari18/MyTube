@@ -13,6 +13,12 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
+    description: {
+      type: String,
+      trim: true,
+      default: "No description provided..",
+      maxLength: 500
+    },
     email: {
       type: String,
       required: true,
