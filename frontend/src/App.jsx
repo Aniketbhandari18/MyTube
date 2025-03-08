@@ -70,10 +70,7 @@ function App() {
         
         <Route 
           path="/channel/:channelIdentifier"
-          element={ <ProtectedRoute>
-            <ChannelPage />
-          </ProtectedRoute> }
-        />
+          element={ <ChannelPage /> }/>
 
         <Route 
           path="*"
