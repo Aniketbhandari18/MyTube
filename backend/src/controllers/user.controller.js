@@ -611,9 +611,12 @@ const getUserProfileDetails = async (req, res) =>{
   
     // my code without aggregation pipeline
     const isValidId = mongoose.Types.ObjectId.isValid(channelIdentifier);
+
+    const orQuery = [{ username: channelIdentifier }];
+    if (isValidId) orQuery.push({ _id: channelIdentifier });
     
     const channel = await User.findOne({
-      $or: [{ username: channelIdentifier}, isValidId ? { _id: channelIdentifier }: {}],
+      $or: orQuery,
       isVerified: true
     });
   
@@ -631,6 +634,7 @@ const getUserProfileDetails = async (req, res) =>{
       user: {
         _id: channel._id,
         username: channel.username,
+        description: channel.description,
         avatar: channel.avatar,
         coverImage: channel.coverImage,
         subscriberCount: subscriberCount,
