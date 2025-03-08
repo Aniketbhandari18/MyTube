@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
 import HomePage from "./pages/HomePage";
 import ChannelPage from "./pages/ChannelPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const ProtectedRoute = ({ children }) =>{
   const { user, isAuthenticated } = useAuthStore();
@@ -74,7 +75,7 @@ function App() {
 
         <Route 
           path="*"
-          element={ <Navigate to='/' replace /> }
+          element={ <NotFoundPage /> }
         />
 
       </Routes>
