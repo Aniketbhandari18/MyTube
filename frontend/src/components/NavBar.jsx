@@ -30,11 +30,11 @@ const NavBar = () => {
       <div className="shrink-0 rounded-full cursor-pointer">
         { 
           isAuthenticated?  user.avatar ?
-            <Link to={`channel/${user._id}`}>
+            <Link to={`/channel/${user._id}`}>
               <img className="size-10" src="https://cdni.iconscout.com/illustration/premium/thumb/female-user-image-illustration-download-in-svg-png-gif-file-formats--person-girl-business-pack-illustrations-6515859.png?f=webp" />
             </Link>: 
   
-            <Link to={`channel/${user._id}`}>
+            <Link to={`/channel/${user._id}`}>
               <div className="size-9 bg-purple-800 text-white rounded-full flex justify-center items-center font-semibold text-xl">
                 { user.username.charAt(0).toUpperCase() }
               </div>
