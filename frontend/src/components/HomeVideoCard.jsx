@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { formatTime, timeAgo } from "../utils/date";
 import { formattedViews as formatViews } from "../utils/number";
 
-const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelAvatar, duration, views, createdAt }) => {
+const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelAvatar, duration, views, createdAt, showChannelInfo = true }) => {
   const formattedDuration = formatTime(duration);
   const uploadedTime = timeAgo(createdAt);
   const formattedViews = formatViews(views);
@@ -20,22 +20,22 @@ const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelA
         </div>
 
         <div className="details flex w-full">
-          <div className="profile-img w-9 mr-2 shrink-0">
+          { showChannelInfo && <div className="profile-img w-9 mr-2 shrink-0">
             <Link to={`/channel/${channelId}`}>
               <img
                 className="w-full rounded-full"
                 src={"https://yt3.ggpht.com/C25u3DcSguL-wd3GaO110Q1fyO5ClTraTjtF72kJhZtpQwuAv3zLmb7K-ZLJecQQJBVvP1McmA=s68-c-k-c0x00ffffff-no-rj"} // avatar
               />
             </Link>
-          </div>
+          </div> }
 
           <div className="video-details font-semibold">
             <div className="title mb-2 leading-4.5">{title}</div>
-            <div className="channel-name text-sm text-gray-500 leading-none">
+            { showChannelInfo && <div className="channel-name text-sm text-gray-500 leading-none">
               <Link to={`/user/${channelId}`}>
                 {channelName}
               </Link>
-            </div>
+            </div> }
             <div className="views text-sm text-gray-500">
               {formattedViews} views &#8226; {uploadedTime}
             </div>
