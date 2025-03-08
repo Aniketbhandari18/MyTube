@@ -1,3 +1,4 @@
+import defaultUser from "../assets/defaultUser.png"
 import { Link } from "react-router-dom";
 import { formatTime, timeAgo } from "../utils/date";
 import { formattedViews as formatViews } from "../utils/number";
@@ -22,10 +23,12 @@ const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelA
         <div className="details flex w-full">
           { showChannelInfo && <div className="profile-img w-9 mr-2 shrink-0">
             <Link to={`/channel/${channelId}`}>
-              <img
+              { channelAvatar ? (<img
                 className="w-full rounded-full"
-                src={"https://yt3.ggpht.com/C25u3DcSguL-wd3GaO110Q1fyO5ClTraTjtF72kJhZtpQwuAv3zLmb7K-ZLJecQQJBVvP1McmA=s68-c-k-c0x00ffffff-no-rj"} // avatar
-              />
+                src={channelAvatar} // avatar
+              />): (
+                <img className="w-full bg-gray-300 rounded-full" src={defaultUser} />
+              ) }
             </Link>
           </div> }
 
