@@ -27,14 +27,18 @@ const NavBar = () => {
           placeholder="Search.." />
       </div>
 
-      <div className="shrink-0">
+      <div className="shrink-0 rounded-full cursor-pointer">
         { 
           isAuthenticated?  user.avatar ?
-            <img className="size-10" src="https://cdni.iconscout.com/illustration/premium/thumb/female-user-image-illustration-download-in-svg-png-gif-file-formats--person-girl-business-pack-illustrations-6515859.png?f=webp" />: 
+            <Link to={`channel/${user._id}`}>
+              <img className="size-10" src="https://cdni.iconscout.com/illustration/premium/thumb/female-user-image-illustration-download-in-svg-png-gif-file-formats--person-girl-business-pack-illustrations-6515859.png?f=webp" />
+            </Link>: 
   
-            <div className="size-9 bg-purple-800 text-white rounded-full flex justify-center items-center font-semibold text-xl">
-              { user.username.charAt(0).toUpperCase() }
-            </div>
+            <Link to={`channel/${user._id}`}>
+              <div className="size-9 bg-purple-800 text-white rounded-full flex justify-center items-center font-semibold text-xl">
+                { user.username.charAt(0).toUpperCase() }
+              </div>
+            </Link>
             : <button className="py-2 bg-gray-700 text-white rounded-md">
                 <Link className="py-2 px-4" to="/register">
                   Sign up
