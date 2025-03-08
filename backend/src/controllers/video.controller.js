@@ -220,6 +220,32 @@ const getVideoById = async (req, res) =>{
   }
 };
 
+const getVideosByChannelId = async (req, res) =>{
+  try {
+    const { channelId } = req.params;
+  
+    const existingChannel = await User.findById(channelId);
+  
+    if (!existingChannel){
+      throw new ApiError(404, "Channel doesn't exist");
+    }
+  
+    const videos = await Video
+      .find({ owner: channelId })
+      .sort({ createdAt: -1 });
+  
+    return res.status(200).json({
+      message: "Videos fetched successfully",
+      videos
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+
 const publishVideo = async (req, res) =>{
   const thumbnailLocalPath = req.files?.thumbnail?.[0].path;
   const videoLocalPath = req.files?.video?.[0].path;
@@ -415,4 +441,13 @@ const incrementView = async (req, res) =>{
   }
 }
 
-export { publishVideo, updateVideo, incrementView, deleteVideo, getVideoById, searchResults, homeVideos };
+export { 
+  publishVideo,
+  updateVideo,
+  incrementView,
+  deleteVideo,
+  getVideoById,
+  getVideosByChannelId,
+  searchResults,
+  homeVideos
+};

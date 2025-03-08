@@ -7,6 +7,7 @@ import {
   getVideoById,
   searchResults,
   homeVideos,
+  getVideosByChannelId,
 } from "../controllers/video.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT, optionalAuth } from "../middlewares/auth.middleware.js";
@@ -16,6 +17,8 @@ const router = Router();
 router.route("/homeVideos").get(homeVideos);
 router.route("/results").get(optionalAuth, searchResults);
 router.route("/:videoId").get(optionalAuth, getVideoById);
+router.route("/channel/:channelId").get(getVideosByChannelId);
+
 router.route("/publish").post(
   verifyJWT,
   upload.fields([
