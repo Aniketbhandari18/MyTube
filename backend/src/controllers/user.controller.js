@@ -411,6 +411,7 @@ const refreshAccessToken = async (req, res) => {
 
 const editProfile = async (req, res) => {
   const newUsername = req.body.newUsername?.trim().toLowerCase();
+  const newDescription = req.body.description?.trim().toLowerCase();
   const { oldPassword, newPassword } = req.body;
   const newAvatarLocalPath = req.files?.avatar?.[0]?.path;
   const newCoverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
@@ -433,6 +434,7 @@ const editProfile = async (req, res) => {
     // check for atleast one field
     if (
       !newUsername &&
+      !newDescription &&
       !newAvatarLocalPath &&
       !newCoverImageLocalpath &&
       !oldPassword &&
@@ -448,7 +450,7 @@ const editProfile = async (req, res) => {
       throw new ApiError(404, "User not found");
     }
 
-    const { username, avatar, coverImage } = user;
+    const { username, description, avatar, coverImage } = user;
 
     // update username
     if (newUsername) {
@@ -456,12 +458,21 @@ const editProfile = async (req, res) => {
         throw new ApiError(400, "New username cannot be same as previous username");
       }
 
-      const usernameExisting = await User.find({ username: newUsername });
+      const usernameExisting = await User.findOne({ username: newUsername });
       if (usernameExisting){
         throw new ApiError(400, "Username is already taken");
       }
 
       user.username = newUsername;
+    }
+
+    // update description
+    if (newDescription){
+      if (newDescription === description){
+        throw new ApiError(400, "New description cannot be same as previous description");
+      }
+
+      user.description = newDescription;
     }
 
     // update password
@@ -520,6 +531,7 @@ const editProfile = async (req, res) => {
       message: "Profile updated succesfully",
       user: {
         username: user.username,
+        description: user.description,
         avatar: user.avatar,
         coverImage: user.coverImage,
       },
