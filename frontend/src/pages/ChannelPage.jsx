@@ -8,6 +8,7 @@ import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
 import HomeVideoCard from "../components/HomeVideoCard";
 import SubscribeButton from "../components/SubscribeButton";
+import NotFoundPage from "./NotFoundPage";
 
 const ChannelDesc = ({ isOwner, description, isSubscribed, setIsSubscribed, channelId }) =>{
   return (
@@ -63,7 +64,7 @@ const ChannelPage = () => {
 
   if (isLoading) return <LoadingSpinner />
 
-  if (error) return <div>{error}</div>
+  if (error) return <NotFoundPage />
 
   return (
     <div className="min-h-screen bg-gray-50 pr-4.5 sm:pr-11 pt-24 pl-20 sm:pl-30 pb-2">
