@@ -1,3 +1,4 @@
+import defaultUser from "../assets/defaultUser.png";
 import { useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Sidebar from "../components/Sidebar";
@@ -78,7 +79,11 @@ const ChannelPage = () => {
         {/* channelInfo */}
         <div className="flex gap-2 sm:gap-4">
           <div className="rounded-full overflow-hidden w-20 sm:w-26 md:w-35">
-            <img className="rounded-full" src={channel.avatar} />
+            { channel.avatar ? (
+              <img className="rounded-full" src={channel.avatar} />
+              ): (
+                <img className="bg-gray-300 rounded-full" src={defaultUser} />
+              ) }
           </div>
           <div className="channel-details">
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold md:mb-2">{channel.username}</h1>
