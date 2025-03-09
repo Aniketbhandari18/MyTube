@@ -31,7 +31,7 @@ const NavBar = () => {
         { 
           isAuthenticated?  user.avatar ?
             <Link to={`/channel/${user._id}`}>
-              <img className="size-10" src="https://cdni.iconscout.com/illustration/premium/thumb/female-user-image-illustration-download-in-svg-png-gif-file-formats--person-girl-business-pack-illustrations-6515859.png?f=webp" />
+              <img className="size-10 rounded-full" src={user.avatar} />
             </Link>: 
   
             <Link to={`/channel/${user._id}`}>
