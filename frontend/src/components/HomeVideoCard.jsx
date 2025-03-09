@@ -35,7 +35,7 @@ const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelA
           <div className="video-details font-semibold">
             <div className="title mb-2 leading-4.5">{title}</div>
             { showChannelInfo && <div className="channel-name text-sm text-gray-500 leading-none">
-              <Link to={`/user/${channelId}`}>
+              <Link to={`/channel/${channelId}`}>
                 {channelName}
               </Link>
             </div> }
