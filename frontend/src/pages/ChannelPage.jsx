@@ -1,4 +1,5 @@
 import defaultUser from "../assets/defaultUser.png";
+import noResult from "../assets/no-result.png"
 import { useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Sidebar from "../components/Sidebar";
@@ -103,23 +104,34 @@ const ChannelPage = () => {
       <div>
         <div className="w-full h-px bg-gray-300 mb-4"></div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-          { videos.map(({ _id, thumbnail, title, duration, views, createdAt }) =>(
-            <HomeVideoCard 
-              key={_id} 
-              _id={_id} 
-              thumbnail={thumbnail} 
-              title={title} 
-              channelId={channel._id} 
-              channelName={channel.username} 
-              channelAvatar={channel.avatar} 
-              duration={duration} 
-              views={views} 
-              createdAt={createdAt}
-              showChannelInfo={false}
-            />
-          )) }
-        </div>
+        { videos.length ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+            { videos.map(({ _id, thumbnail, title, duration, views, createdAt }) =>(
+              <HomeVideoCard 
+                key={_id} 
+                _id={_id} 
+                thumbnail={thumbnail} 
+                title={title} 
+                channelId={channel._id} 
+                channelName={channel.username} 
+                channelAvatar={channel.avatar} 
+                duration={duration} 
+                views={views} 
+                createdAt={createdAt}
+                showChannelInfo={false}
+              />
+            )) }
+          </div>
+        ): (
+          <div className="flex items-center flex-col">
+            <div>
+              <img className="w-90 rounded-full" src={noResult} />
+            </div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold">
+              No Videos found
+            </div>
+          </div>
+        ) }
       </div>
     </div>
   )
