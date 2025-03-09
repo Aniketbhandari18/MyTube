@@ -1,12 +1,12 @@
 import defaultUser from "../assets/defaultUser.png"
 import { Link } from "react-router-dom";
 import { formatTime, timeAgo } from "../utils/date";
-import { formattedViews as formatViews } from "../utils/number";
+import { formattedCount } from "../utils/number";
 
 const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelAvatar, duration, views, createdAt, showChannelInfo = true }) => {
   const formattedDuration = formatTime(duration);
   const uploadedTime = timeAgo(createdAt);
-  const formattedViews = formatViews(views);
+  const formattedViews = formattedCount(views);
 
   return (
     <Link to={`/watch/${_id}`}>
