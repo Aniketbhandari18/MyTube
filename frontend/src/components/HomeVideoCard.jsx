@@ -9,7 +9,7 @@ const HomeVideoCard = ({ _id, thumbnail, title, channelId, channelName, channelA
   const formattedViews = formatViews(views);
 
   return (
-    <Link to={`/video/${_id}`}>
+    <Link to={`/watch/${_id}`}>
       <div className="rounded-md p-2 bg-gray-50 hover:bg-gray-200 transition-all duration-300 cursor-pointer">
         <div className="thumbnail relative mb-2">
           <img
