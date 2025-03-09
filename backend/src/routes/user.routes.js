@@ -13,7 +13,7 @@ import {
   checkAuth,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { verifyJWT, verifyVerificationToken } from "../middlewares/auth.middleware.js";
+import { optionalAuth, verifyJWT, verifyVerificationToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.route("/reset-password/:resetPasswordToken").post(resetPassword);
 router.route("/login").post(loginUser);
 router.route("/check-auth").get(verifyJWT, checkAuth);
 
-router.route("/:channelIdentifier").get(getUserProfileDetails);
+router.route("/:channelIdentifier").get(optionalAuth, getUserProfileDetails);
 
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser);
