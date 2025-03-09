@@ -171,7 +171,7 @@ const getVideoById = async (req, res) =>{
     }
   
     // access details
-    const { title, description, videoFile, thumbnail, owner } =  video;
+    const { title, description, views, videoFile, thumbnail, owner } =  video;
   
     // find owner (one who published the video)
     const channel = await User.findById(owner);
@@ -196,6 +196,7 @@ const getVideoById = async (req, res) =>{
         _id: video._id,
         title,
         description,
+        views,
         videoFile,
         thumbnail,
       },
