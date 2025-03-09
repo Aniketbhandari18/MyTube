@@ -10,13 +10,14 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import HomeVideoCard from "../components/HomeVideoCard";
 import SubscribeButton from "../components/SubscribeButton";
 import NotFoundPage from "./NotFoundPage";
+import { useSubscriptionStore } from "../store/subscriptionStore";
 
-const ChannelDesc = ({ isOwner, description, isSubscribed, setIsSubscribed, channelId }) =>{
+const ChannelDesc = ({ isOwner, description }) =>{
   return (
     <>
       <p className="text-sm sm:text-sm md:text-[16px] font-semibold text-gray-600 mb-1 sm:mb-2">{description}</p>
 
-      { !isOwner ? (<SubscribeButton isSubscribed={isSubscribed} setIsSubscribed={setIsSubscribed} channelId={channelId} />): (
+      { !isOwner ? (<SubscribeButton />): (
         <button className="text-sm sm:text-sm px-4 py-2 bg-black text-white rounded-3xl font-semibold cursor-pointer">
           Customize Profile
         </button>
@@ -28,11 +29,11 @@ const ChannelDesc = ({ isOwner, description, isSubscribed, setIsSubscribed, chan
 
 const ChannelPage = () => {
   const { user } = useAuthStore();
+  const { initializeSubscription } = useSubscriptionStore();
   const { channelIdentifier } = useParams();
 
   const [channel, setChannel] = useState({});
   const [isOwner, setIsOwner] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,7 +47,8 @@ const ChannelPage = () => {
         console.log("channelIdentifier:", channelIdentifier);
         console.log("userId:", channelResponse.data.user._id);
         setChannel(channelResponse.data.user);
-        setIsSubscribed(channelResponse.data.user.isSubscribed);
+        initializeSubscription(channelResponse.data.user.isSubscribed, channelResponse.data.user._id);
+        console.log(channelResponse.data.user.isSubscribed);
         setIsOwner(channelResponse.data.user._id === user?._id);
 
 
@@ -91,13 +93,13 @@ const ChannelPage = () => {
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold md:mb-2">{channel.username}</h1>
             <p className="text-sm md:text-[16px] text-gray-600">{channel.subscriberCount} subscribers &#8226; {videos.length} videos</p>
             <div className="hidden sm:block">
-              <ChannelDesc isOwner={isOwner} description={channel.description} isSubscribed={isSubscribed} setIsSubscribed={setIsSubscribed} channelId={channel._id} />
+              <ChannelDesc isOwner={isOwner} description={channel.description} />
             </div>
           </div>
         </div>
 
           <div className="sm:hidden mt-2 ml-2">
-            <ChannelDesc isOwner={isOwner} description={channel.description} isSubscribed={isSubscribed} setIsSubscribed={setIsSubscribed} channelId={channel._id} />
+            <ChannelDesc isOwner={isOwner} description={channel.description} />
           </div>
       </div>
 
