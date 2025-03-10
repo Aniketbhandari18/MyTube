@@ -15,6 +15,12 @@ import toast from "react-hot-toast";
 
 const Engagement = ({ videoId, engagement, setEngagement }) =>{
   const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated } = useAuthStore();
+
+  if (!isAuthenticated){
+    toast.error("Please Login to Like/Dislike");
+    return;
+  }
 
   const handleEngagement = async (action) =>{
     const userEngagement = engagement.engagement;
