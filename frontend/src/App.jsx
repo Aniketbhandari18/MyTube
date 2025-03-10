@@ -9,6 +9,7 @@ import { useAuthStore } from "./store/authStore";
 import HomePage from "./pages/HomePage";
 import ChannelPage from "./pages/ChannelPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import WatchVideoPage from "./pages/WatchVideoPage";
 
 const ProtectedRoute = ({ children }) =>{
   const { user, isAuthenticated } = useAuthStore();
@@ -71,7 +72,13 @@ function App() {
         
         <Route 
           path="/channel/:channelIdentifier"
-          element={ <ChannelPage /> }/>
+          element={ <ChannelPage /> }
+        />
+
+        <Route 
+          path="/watch/:videoId"
+          element={ <WatchVideoPage /> }
+        />
 
         <Route 
           path="*"
