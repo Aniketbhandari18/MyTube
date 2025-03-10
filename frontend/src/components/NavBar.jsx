@@ -18,11 +18,11 @@ const NavBar = () => {
       </div>
 
       <div className={`relative bg-white rounded-md flex items-center py-2 min-w-36 w-lg shadow-[0_1px_8px_rgb(0,0,0,0.2)] ml-4 mr-4 ${focus && "shadow-[0_2px_14px_rgb(0,0,0,0.2)]"}`}>
-        <Search className="size-5 absolute left-4 top-2.5 text-gray-500" />
+        <Search className="size-[30px] absolute left-[7px] top-[4.2px] p-1 text-gray-500 cursor-pointer" />
         <input 
           onFocus={() => setFocus(true)} 
           onBlur={() =>setFocus(false)}
-          className="pl-12 outline-none h-full" 
+          className="pl-12 outline-none h-full w-full" 
           type="text" 
           placeholder="Search.." />
       </div>
