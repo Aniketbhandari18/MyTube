@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import LoadingSpinner from "../components/LoadingSpinner";
 import NotFoundPage from "./NotFoundPage";
 import toast from "react-hot-toast";
+import Description from "../components/Description";
 
 const Engagement = ({ videoId, engagement, setEngagement }) =>{
   const [isLoading, setIsLoading] = useState(false);
@@ -117,6 +118,25 @@ const WatchVideoPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [maxLength, setMaxLength] = useState(320);
+
+  useEffect(() =>{
+    const updateMaxLength = () =>{
+      if (window.innerWidth < 300) setMaxLength(50)
+      else if (window.innerWidth < 400) setMaxLength(80);
+      else if (window.innerWidth < 560) setMaxLength(100);
+      else if (window.innerWidth < 768) setMaxLength(120);
+      else if (window.innerWidth < 960) setMaxLength(200);
+      else setMaxLength(300);
+    }
+
+    updateMaxLength();
+
+    window.addEventListener("resize", updateMaxLength);
+
+    return () => window.removeEventListener("resize", updateMaxLength);
+  }, [])
+
   useEffect(() =>{
     (async () =>{
       setIsLoading(true);
@@ -217,6 +237,11 @@ const WatchVideoPage = () => {
           <div className="flex justify-between items-center xs:hidden">
             <SubscribeButton />
             <Engagement videoId={video._id} engagement={engagement} setEngagement={setEngagement} />
+          </div>
+
+          {/* description */}
+          <div className="bg-gray-200 rounded-lg mt-3 p-3">
+            <Description content={video.description} maxLength={maxLength} />
           </div>
         </div>
       </div>
