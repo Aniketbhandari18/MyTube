@@ -17,12 +17,12 @@ const Engagement = ({ videoId, engagement, setEngagement }) =>{
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated } = useAuthStore();
 
-  if (!isAuthenticated){
-    toast.error("Please Login to Like/Dislike");
-    return;
-  }
-
   const handleEngagement = async (action) =>{
+    if (!isAuthenticated){
+      toast.error("Please Login to Like/Dislike");
+      return;
+    }
+    
     const userEngagement = engagement.engagement;
     const likesCount = engagement.likesCount;
     const dislikesCount = engagement.dislikesCount;
