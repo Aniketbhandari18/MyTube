@@ -211,28 +211,6 @@ const WatchVideoPage = () => {
             <div className="xs:block hidden">
               <Engagement videoId={video._id} engagement={engagement} setEngagement={setEngagement} />
             </div>
-
-            {/* <div className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: .9 }}
-                  className="flex items-center justify-center bg-gray-200 size-10 p-2 rounded-full cursor-pointer"
-                >
-                  <ThumbsUp />
-                </motion.button>
-                <p className="font-semibold text-gray-600">25K</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: .9 }}
-                  className="flex items-center justify-center bg-gray-200 size-10 p-2 rounded-full cursor-pointer">
-                  <ThumbsDown />
-                </motion.button>
-                <p className="font-semibold text-gray-600">20</p>
-              </div>
-            </div> */}
           </div>
 
           {/* engagement-xs */}
@@ -242,27 +220,6 @@ const WatchVideoPage = () => {
           </div>
         </div>
       </div>
-    
-      {/* <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:w-3/4 w-full">
-          <div className="relative w-full pb-[56.25%] bg-black rounded-lg shadow-lg">
-            <video 
-              src={video.videoFile} 
-              controls 
-              autoPlay
-              className="absolute inset-0 w-full h-full object-contain rounded-lg"
-            ></video>
-          </div>
-
-          <h1 className="text-xl font-semibold mt-4">{video.title}</h1>
-
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold">Comments</h2>
-            <p className="text-gray-600">Coming soon...</p>
-          </div>
-        </div>
-
-      </div> */}
     </div>
   )
 }
