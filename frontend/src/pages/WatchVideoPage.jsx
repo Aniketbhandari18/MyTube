@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import LoadingSpinner from "../components/LoadingSpinner";
 import NotFoundPage from "./NotFoundPage";
 import toast from "react-hot-toast";
-import Description from "../components/Description";
+import ContentBox from "../components/ContentBox";
 
 const Engagement = ({ videoId, engagement, setEngagement }) =>{
   const [isLoading, setIsLoading] = useState(false);
@@ -241,7 +241,7 @@ const WatchVideoPage = () => {
 
           {/* description */}
           <div className="bg-gray-200 rounded-lg mt-3 p-3">
-            <Description content={video.description} maxLength={maxLength} />
+            <ContentBox content={video.description} maxLength={maxLength} />
           </div>
         </div>
       </div>

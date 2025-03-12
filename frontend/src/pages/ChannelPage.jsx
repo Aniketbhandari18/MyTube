@@ -11,13 +11,13 @@ import HomeVideoCard from "../components/HomeVideoCard";
 import SubscribeButton from "../components/SubscribeButton";
 import NotFoundPage from "./NotFoundPage";
 import { useSubscriptionStore } from "../store/subscriptionStore";
-import Description from "../components/Description";
+import ContentBox from "../components/ContentBox";
 
 const ChannelDesc = ({ isOwner, description }) =>{
   console.log(description)
   return (
     <>
-      <Description content={description} maxLength={60} popUpMode={true} />
+      <ContentBox content={description} maxLength={60} popUpMode={true} />
 
       { !isOwner ? (<SubscribeButton />): (
         <button className="text-sm sm:text-sm px-4 py-2 bg-black text-white rounded-3xl font-semibold cursor-pointer">
