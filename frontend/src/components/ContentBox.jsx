@@ -9,7 +9,7 @@ const ContentBox = ({ content, maxLength, popUpMode=false }) => {
 
   return (
     <div 
-      className="text-sm sm:text-sm md:text-[16px] font-semibold text-gray-600 mb-1 sm:mb-2"
+      className="text-sm sm:text-sm md:text-[16px] font-semibold text-gray-600"
     >
       { isExpanded && popUpMode && <div className="flex justify-between">
         <AboutPopUp content={content} setIsExpanded={setIsExpanded} />
