@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.route("/:videoId").post(verifyJWT, addComment);
-router.route("/edit/:commentId").patch(verifyJWT, editComment);
+router.route("/:commentId").patch(verifyJWT, editComment);
 router.route("/:commentId").delete(verifyJWT, deleteComment);
 router.route("/:videoId").get(getVideoComments);
 
