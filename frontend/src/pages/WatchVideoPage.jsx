@@ -13,6 +13,8 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import NotFoundPage from "./NotFoundPage";
 import toast from "react-hot-toast";
 import ContentBox from "../components/ContentBox";
+import CommentList from "../components/CommentList";
+import CommentInput from "../components/CommentInput";
 
 const Engagement = ({ videoId, engagement, setEngagement }) =>{
   const [isLoading, setIsLoading] = useState(false);
@@ -118,6 +120,10 @@ const WatchVideoPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [totalComments, setTotalComments] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+
   const [maxLength, setMaxLength] = useState(320);
 
   useEffect(() =>{
@@ -160,6 +166,25 @@ const WatchVideoPage = () => {
     })()
   }, [videoId, user?._id])
 
+  useEffect(() =>{
+    if (!video._id) return;
+    
+    (async () =>{
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/comment/${video._id}`);
+  
+        console.log("commentsData:", data)
+  
+        setTotalComments(data.totalComments);
+        setComments(data.comments);
+        setHasMore(data.hasMore);
+      } catch (err) {
+        console.log(err);
+      }
+    })()
+  }, [video._id])
+
+
   const formattedSubscriberCount = formattedCount(channel.subscriberCount);
   const formattedViews = formattedCount(video.views);
   
@@ -169,6 +194,8 @@ const WatchVideoPage = () => {
     toast.error(error);
     return <NotFoundPage />
   }
+
+  console.log("comments:", comments)
 
   console.log("video:", video);
   console.log("channel:", channel);
@@ -244,6 +271,12 @@ const WatchVideoPage = () => {
             <ContentBox content={video.description} maxLength={maxLength} />
           </div>
         </div>
+
+        <h2 className="text-lg sm:text-2xl font-bold mt-3 md:mt-6 mb-3">{totalComments} Comments</h2>
+
+        <CommentInput comments={comments} setComments={setComments} videoId={video._id} />
+
+        <CommentList comments={comments} setComments={setComments} hasMore={hasMore} maxLength={maxLength} />
       </div>
     </div>
   )
