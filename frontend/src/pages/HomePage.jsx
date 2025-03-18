@@ -60,11 +60,12 @@ const HomePage = () => {
       <Sidebar />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-        {videos.map(({ _id, thumbnail, title, owner, duration, views, createdAt }) =>(
+        {videos.map(({ _id, thumbnail, videoFile, title, owner, duration, views, createdAt }) =>(
           <HomeVideoCard 
             key={_id} 
             _id={_id} 
             thumbnail={thumbnail} 
+            videoFile={videoFile}
             title={title} 
             channelId={owner._id} 
             channelName={owner.username} 

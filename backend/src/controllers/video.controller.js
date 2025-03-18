@@ -199,6 +199,7 @@ const getVideoById = async (req, res) =>{
         views,
         videoFile,
         thumbnail,
+        videoFile
       },
       channel: {
         _id: channel._id,
