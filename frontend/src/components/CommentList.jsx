@@ -3,19 +3,13 @@ import defaultUser from "../assets/defaultUser.png"
 import { useAuthStore } from "../store/authStore";
 import ContentBox from "./ContentBox";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import toast from "react-hot-toast";
 import { useEffect, useRef, useState } from "react";
 import CommentInput from "./CommentInput";
+import { useCommentStore } from "../store/commentStore";
 
-const CommentList = ({ comments, setComments, hasMore, maxLength }) => {
-  if (!comments || comments.length === 0){
-    return (
-      <p className="text-lg font-semibold">No comments yet..</p>
-    )
-  }
-
+const CommentList = ({ maxLength }) => {
   const { user } = useAuthStore();
+  const { comments, deleteComment, editComment } = useCommentStore();
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
@@ -42,20 +36,8 @@ const CommentList = ({ comments, setComments, hasMore, maxLength }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [])
 
-  const deleteComment = async (commentId) =>{
-    try {
-      const { data } = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/comment/${commentId}`);
-  
-      console.log(data.deletedComment);
-  
-      setComments((prev) =>
-        prev.filter(({ _id }) => _id !== commentId)
-      )
-      toast.success("Comment deleted successfully")
-    } catch (err) {
-      console.log(err);
-      toast.error(err.response?.data?.message);
-    }
+  const handleDelete = async (commentId) =>{
+    await deleteComment(commentId);
   }
 
   const onCancelEdit = () =>{
@@ -63,25 +45,19 @@ const CommentList = ({ comments, setComments, hasMore, maxLength }) => {
     setOpenMenuId(null);
   }
 
-  const editComment = async (commentId, editedContent) =>{
-    if (!editedContent.trim()) return;
+  const handleEdit = async (commentId, editedContent) =>{
+    await editComment(commentId, editedContent);
 
-    try {
-      const { data } = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/comment/${commentId}`, { editedContent });
+    setEditingCommentId(null);
+    setOpenMenuId(null);
+  }
 
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment._id === commentId ? {...comment, content: data.editedComment.content}: comment
-        )
-      )
-
-      toast.success("Comment edited successfully");
-      setEditingCommentId(null);
-      setOpenMenuId(null);
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to edit comment");
-    }
+  if (!comments || comments.length === 0){
+    return (
+      <p className="text-lg font-semibold">
+        No comments yet...
+      </p>
+    )
   }
 
   return (
@@ -103,7 +79,7 @@ const CommentList = ({ comments, setComments, hasMore, maxLength }) => {
             </Link>
 
             {editingCommentId === comment._id ? (
-              <CommentInput editMode={true} initialComment={comment.content} onSubmit={(editedComment) => editComment(comment._id, editedComment)} onCancelEdit={onCancelEdit} />
+              <CommentInput editMode={true} initialComment={comment.content} onSubmit={(editedComment) => handleEdit(comment._id, editedComment)} onCancelEdit={onCancelEdit} />
             ): (
               <div 
               className={`bg-gray-200 rounded-lg py-2 px-3 ${user?._id === comment.user._id && "flex items-start"}`}>
@@ -135,7 +111,7 @@ const CommentList = ({ comments, setComments, hasMore, maxLength }) => {
                         className="absolute top-7 right-3 border-2 py-2 px-3 bg-white rounded-lg"
                       >
                         <button 
-                          onClick={() => deleteComment(comment._id)}
+                          onClick={() => handleDelete(comment._id)}
                           className="flex gap-2 items-center cursor-pointer"
                         >
                           <Trash2 className="size-5" />

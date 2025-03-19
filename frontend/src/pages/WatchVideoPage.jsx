@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import ContentBox from "../components/ContentBox";
 import CommentList from "../components/CommentList";
 import CommentInput from "../components/CommentInput";
+import { useCommentStore } from "../store/commentStore";
 
 const Engagement = ({ videoId, engagement, setEngagement }) =>{
   const [isLoading, setIsLoading] = useState(false);
@@ -111,6 +112,7 @@ const Engagement = ({ videoId, engagement, setEngagement }) =>{
 const WatchVideoPage = () => {
   const { user } = useAuthStore();
   const { initializeSubscription } = useSubscriptionStore();
+  const { setVideoId, totalComments, fetchComments } = useCommentStore();
   const { videoId } = useParams();
 
   const [video, setVideo] = useState({});
@@ -119,10 +121,6 @@ const WatchVideoPage = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const [totalComments, setTotalComments] = useState(0);
-  const [comments, setComments] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
 
   const [maxLength, setMaxLength] = useState(320);
 
@@ -153,6 +151,7 @@ const WatchVideoPage = () => {
         console.log(data)
 
         setVideo(data.video);
+        setVideoId(data.video._id);
         setChannel(data.channel);
         setIsOwner(data.channel._id === user?._id);
         initializeSubscription(data.channel.isSubscribed, data.channel._id);
@@ -168,19 +167,9 @@ const WatchVideoPage = () => {
 
   useEffect(() =>{
     if (!video._id) return;
-    
+
     (async () =>{
-      try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/comment/${video._id}`);
-  
-        console.log("commentsData:", data)
-  
-        setTotalComments(data.totalComments);
-        setComments(data.comments);
-        setHasMore(data.hasMore);
-      } catch (err) {
-        console.log(err);
-      }
+      await fetchComments();
     })()
   }, [video._id])
 
@@ -194,12 +183,6 @@ const WatchVideoPage = () => {
     toast.error(error);
     return <NotFoundPage />
   }
-
-  console.log("comments:", comments)
-
-  console.log("video:", video);
-  console.log("channel:", channel);
-  console.log("engagement:", engagement);
 
   return (
     <div className="min-h-screen bg-gray-50 pr-4.5 sm:pr-11 md:pr-16 pt-22 sm:pt-26 pl-20 sm:pl-30 md:pl-35 pb-2">
@@ -274,9 +257,9 @@ const WatchVideoPage = () => {
 
         <h2 className="text-lg sm:text-2xl font-bold mt-3 md:mt-6 mb-3">{totalComments} Comments</h2>
 
-        <CommentInput comments={comments} setComments={setComments} videoId={video._id} />
+        <CommentInput />
 
-        <CommentList comments={comments} setComments={setComments} hasMore={hasMore} maxLength={maxLength} />
+        <CommentList maxLength={maxLength} />
       </div>
     </div>
   )

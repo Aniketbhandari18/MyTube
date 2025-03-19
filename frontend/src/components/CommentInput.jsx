@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import defaultUser from "../assets/defaultUser.png"
 import { useAuthStore } from "../store/authStore";
 import EmojiInput from "./EmojiInput";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { useCommentStore } from "../store/commentStore";
 
-const CommentInput = ({ videoId, comments, setComments, editMode=false, initialComment="", onSubmit, onCancelEdit }) => {
+const CommentInput = ({ editMode=false, initialComment="", onSubmit, onCancelEdit }) => {
   const { user } = useAuthStore();
+  const { addComment } = useCommentStore();
 
   const [comment, setComment] = useState(initialComment);
 
@@ -17,27 +17,12 @@ const CommentInput = ({ videoId, comments, setComments, editMode=false, initialC
 
   const handleSubmit = () =>{
     if (editMode) onSubmit(comment);
-    else addComment();
+    else handleAdd();
   }
 
-  const addComment = async () =>{
-    if (!comment.trim()) return;
-
-    try {
-      console.log(comment)
-      const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/comment/${videoId}`, { content: comment });
-
-      console.log(data);
-
-      setComments((prev) => [data.comment, ...prev]);
-      setComment("");
-    } catch (err) {
-      console.log(err);
-      if (err.response?.status === 401){
-        toast.error("Please Login to comment")
-      }
-      else toast.error(err.response?.data?.message);
-    }
+  const handleAdd = async () =>{
+    await addComment(comment);
+    setComment("");
   }
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
