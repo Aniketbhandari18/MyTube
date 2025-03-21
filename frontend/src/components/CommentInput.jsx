@@ -3,10 +3,11 @@ import defaultUser from "../assets/defaultUser.png"
 import { useAuthStore } from "../store/authStore";
 import EmojiInput from "./EmojiInput";
 import { useCommentStore } from "../store/commentStore";
+import { LoaderCircle } from "lucide-react";
 
 const CommentInput = ({ editMode=false, initialComment="", onSubmit, onCancelEdit }) => {
   const { user } = useAuthStore();
-  const { addComment } = useCommentStore();
+  const { posting, addComment } = useCommentStore();
 
   const [comment, setComment] = useState(initialComment);
 
@@ -37,6 +38,12 @@ const CommentInput = ({ editMode=false, initialComment="", onSubmit, onCancelEdi
 
     return () => window.removeEventListener("resize", checkScreenSize);
   }, [])
+
+  if (posting) return (
+    <div className="w-full flex justify-center">
+      <LoaderCircle className="size-9 animate-spin [animation-duration:.6s] text-gray-400" />
+    </div>
+  )
   
   return (
     <div className="flex gap-3">
