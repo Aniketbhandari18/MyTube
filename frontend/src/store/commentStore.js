@@ -8,6 +8,7 @@ export const useCommentStore = create((set, get) => ({
   totalComments: 0,
   hasMore: true,
   isLoading: true,
+  posting: false,
   error: null,
   
   setVideoId: (videoId) =>{
@@ -45,6 +46,7 @@ export const useCommentStore = create((set, get) => ({
 
   addComment: async (comment) =>{
     if (!comment.trim()) return;
+    set({ posting: true });
 
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/comment/${get().videoId}`, { content: comment });
@@ -58,10 +60,13 @@ export const useCommentStore = create((set, get) => ({
         toast.error("Please Login to comment")
       }
       else toast.error(err.response?.data?.message);
+    } finally {
+      set({ posting: false });
     }
   },
 
   deleteComment: async (commentId) =>{
+    set({ isLoading: true });
     try {
       const { data } = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/comment/${commentId}`);
   
@@ -76,11 +81,15 @@ export const useCommentStore = create((set, get) => ({
     } catch (err) {
       console.log(err);
       toast.error(err.response?.data?.message);
+    } finally {
+      set({ isLoading: false });
     }
   },
 
   editComment: async(commentId, editedContent) =>{
     if (!editedContent.trim()) return;
+
+    set({ isLoading: true });
 
     try {
       const { data } = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/comment/${commentId}`, { editedContent });
@@ -96,6 +105,8 @@ export const useCommentStore = create((set, get) => ({
     } catch (err) {
       console.log(err);
       toast.error("Failed to edit comment");
+    } finally {
+      set({ isLoading: false });
     }
   }
 }))
