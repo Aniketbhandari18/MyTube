@@ -40,7 +40,7 @@ const CommentInput = ({ editMode=false, initialComment="", onSubmit, onCancelEdi
   }, [])
 
   if (posting) return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center my-5">
       <LoaderCircle className="size-9 animate-spin [animation-duration:.6s] text-gray-400" />
     </div>
   )

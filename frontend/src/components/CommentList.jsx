@@ -68,7 +68,7 @@ const CommentList = ({ maxLength }) => {
         isLoading && (editingCommentId === comment._id || deletingCommentId === comment._id) ? (
           <div
             key={comment._id} 
-            className="w-full flex justify-center items-center mb-4 ml-9"
+            className="w-full flex justify-center items-center my-5 ml-9"
           >
             <LoaderCircle className="size-9 animate-spin [animation-duration:.6s] text-gray-400" />
           </div>
@@ -80,7 +80,7 @@ const CommentList = ({ maxLength }) => {
                 src={comment.user.avatar ? comment.user.avatar: defaultUser} 
               />
             </Link>
-            <div className="flex flex-col justify-start">
+            <div className="flex flex-col justify-start items-start">
               <Link
                 to={`/channel/${comment.user._id}`}
                 className="font-semibold text-gray-800 -mt-[6px]"
