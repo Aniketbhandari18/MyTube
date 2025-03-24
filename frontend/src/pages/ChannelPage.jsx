@@ -80,9 +80,14 @@ const ChannelPage = () => {
 
       <div className="mb-4">
         {/* coverImage */}
-        { channel.coverImage && <div className="cover-image rounded-xl overflow-hidden mb-2 xs:mb-4">
-          { true && <img className="w-full" src={"https://yt3.googleusercontent.com/hBFuxix2oeAw9twotBd8C6sZw3M9kSOPYBhrHisGMlKp0RYLVMR6Jkdm_q-9L_Z6eaPrj6LlQA=w1138-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"} /> }
-        </div>}
+        { channel.coverImage && (
+          <div className="cover-image w-full rounded-xl overflow-hidden mb-4 aspect-[4/1] sm:aspect-[5.5/1]">
+            <img 
+              className="w-full h-full object-cover" 
+              src={channel.coverImage} 
+            />
+          </div>
+        )}
 
         {/* channelInfo */}
         <div className="flex gap-2 sm:gap-4">
