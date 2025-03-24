@@ -74,13 +74,13 @@ const ChannelPage = () => {
   if (error) return <NotFoundPage />
 
   return (
-    <div className="min-h-screen bg-gray-50 pr-4.5 sm:pr-11 pt-24 pl-20 sm:pl-30 pb-2">
+    <div className="min-h-screen bg-gray-50 pr-3 xs:pr-4.5 sm:pr-11 pt-22 sm:pt-24 pl-7.5 xs:pl-20 sm:pl-30 pb-2">
       <NavBar />
       <Sidebar />
 
       <div className="mb-4">
         {/* coverImage */}
-        { channel.coverImage && <div className="cover-image rounded-xl overflow-hidden mb-4">
+        { channel.coverImage && <div className="cover-image rounded-xl overflow-hidden mb-2 xs:mb-4">
           { true && <img className="w-full" src={"https://yt3.googleusercontent.com/hBFuxix2oeAw9twotBd8C6sZw3M9kSOPYBhrHisGMlKp0RYLVMR6Jkdm_q-9L_Z6eaPrj6LlQA=w1138-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"} /> }
         </div>}
 

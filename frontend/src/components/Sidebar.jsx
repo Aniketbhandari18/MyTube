@@ -41,35 +41,39 @@ const Sidebar = () => {
   }
 
   return (
-    <div ref={sidebarRef} className={`fixed top-0 left-0 h-full bg-white shadow-xl sm:p-4 pt-50 sm:pt-50 ${isExpanded ? "w-60 p-2" : "w-16 sm:w-20 p-2"} duration-200 border-r-[.02rem] border-gray-200 z-50`}>
+    <div ref={sidebarRef} className={`fixed top-0 left-0 h-full bg-white shadow-xl sm:p-4 pt-50 sm:pt-50 rounded-xl ${isExpanded ? "w-60 p-2" : "w-5 xs:w-16 sm:w-20 p-2"} duration-200 border-r-[.02rem] border-gray-200 z-50`}>
 
-      <button onClick={handleExpand} className="absolute top-78 -right-3 rounded-full bg-gray-600 shadow-2xl cursor-pointer">
-        <ChevronRight className={`size-6 text-white transition-transform duration-300 ${ isExpanded && "rotate-180" }`} />
-      </button>
+      <div className={`${isExpanded && "visible"} invisible xs:visible`}>
+        <button onClick={handleExpand} className="visible absolute top-1/2 -right-3 -translate-y-4/6 rounded-full bg-gray-600 shadow-2xl cursor-pointer">
+          <ChevronRight className={`size-5 xs:size-6 text-white transition-transform duration-300 ${ isExpanded && "rotate-180" }`} />
+        </button>
 
-      <div className="sm:hidden absolute flex top-4 left-3.5">
-        <img className="size-9" src={videoIcon}/>
-        <img className={`${isExpanded && "inline-block"} hidden bg-transparent w-[170px]`} src={logo}/>
+        <div className="sm:hidden absolute flex top-4 left-3.5">
+          <img className="size-9" src={videoIcon}/>
+          <img className={`${isExpanded && "inline-block"} hidden bg-transparent w-[170px]`} src={logo}/>
+        </div>
+
+        <div className="absolute top-1/2 -translate-y-1/2">
+          <SidebarItem icon={Home} text="Home" isExpanded={isExpanded} tooltip="Home" to="/" />
+          <SidebarItem icon={User} text="You" isExpanded={isExpanded} tooltip="You" to="/you" />
+
+          <SidebarItem icon={History} text="History" isExpanded={isExpanded} tooltip="History" to="/history" />
+          <SidebarItem icon={ThumbsUp} text="Liked Videos" isExpanded={isExpanded} tooltip="Liked Videos" to="/liked-videos" />
+
+          <SidebarItem icon={List} text="All Subscriptions" isExpanded={isExpanded} tooltip="Subscriptions" to="/subscriptions" />
+        </div>
+
+
+        { 
+          isAuthenticated && 
+          <button onClick={handleLogOut} className="absolute flex bg-black text-white bottom-4 rounded-md py-2 px-3 cursor-pointer">
+            <LogOut className="size-6" />
+            { isExpanded && <span className="ml-2 font-semibold text-md">
+              Sign out
+            </span> }
+          </button> 
+        }
       </div>
-
-      <SidebarItem icon={Home} text="Home" isExpanded={isExpanded} tooltip="Home" to="/" />
-      <SidebarItem icon={User} text="You" isExpanded={isExpanded} tooltip="You" to="/you" />
-
-      <SidebarItem icon={History} text="History" isExpanded={isExpanded} tooltip="History" to="/history" />
-      <SidebarItem icon={ThumbsUp} text="Liked Videos" isExpanded={isExpanded} tooltip="Liked Videos" to="/liked-videos" />
-
-      <SidebarItem icon={List} text="All Subscriptions" isExpanded={isExpanded} tooltip="Subscriptions" to="/subscriptions" />
-
-
-      { 
-        isAuthenticated && 
-        <button onClick={handleLogOut} className="absolute flex bg-black text-white bottom-4 rounded-md py-2 px-3 cursor-pointer">
-          <LogOut className="size-6" />
-          { isExpanded && <span className="ml-2 font-semibold text-md">
-            Sign out
-          </span> }
-        </button> 
-      }
     </div>
   )
 }

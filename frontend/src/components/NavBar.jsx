@@ -11,10 +11,17 @@ const NavBar = () => {
   const { user, isAuthenticated } = useAuthStore();
 
   return (
-    <div className="absolute left-0 right-0 top-0 bg-white flex justify-between py-4 pl-16 sm:pl-24 pr-6 shadow-md">
+    <div 
+      className="absolute left-0 right-0 top-0 bg-white flex justify-between shadow-md 
+      py-4 pl-7 xs:pl-16 sm:pl-24 pr-3 xs:pr-6"
+    >
       <div className="hidden sm:flex shrink-0 justify-between items-center">
         <img className="size-6 md:size-8" src={ videoIcon } />
-        <img className="bg-transparent w-[150px] md:w-[170px]" src={ logo } />
+        <img className="flex bg-transparent w-[150px] md:w-[170px]" src={ logo } />
+      </div>
+      
+      <div className="xs:hidden shrink-0 flex justify-between items-center">
+        <img className="size-9" src={ videoIcon } />
       </div>
 
       <div className={`relative bg-white rounded-md flex items-center py-2 min-w-36 w-lg shadow-[0_1px_8px_rgb(0,0,0,0.2)] ml-4 mr-4 ${focus && "shadow-[0_2px_14px_rgb(0,0,0,0.2)]"}`}>
