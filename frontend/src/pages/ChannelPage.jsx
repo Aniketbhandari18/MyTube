@@ -1,6 +1,6 @@
 import defaultUser from "../assets/defaultUser.png";
 import noResult from "../assets/no-result.png"
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Sidebar from "../components/Sidebar";
 import { useAuthStore } from "../store/authStore";
@@ -22,9 +22,11 @@ const ChannelDesc = ({ isOwner, description }) =>{
       </div>
 
       { !isOwner ? (<SubscribeButton />): (
-        <button className="text-sm sm:text-sm px-4 py-2 bg-black text-white rounded-3xl font-semibold cursor-pointer">
-          Customize Profile
-        </button>
+        <Link to={"/channel/edit" }>
+          <button className="text-sm sm:text-sm px-4 py-2 bg-black text-white rounded-3xl font-semibold cursor-pointer">
+            Customize Profile
+          </button>
+        </Link>
       ) }
     </>
   );
@@ -81,7 +83,7 @@ const ChannelPage = () => {
       <div className="mb-4">
         {/* coverImage */}
         { channel.coverImage && (
-          <div className="cover-image w-full rounded-xl overflow-hidden mb-4 aspect-[4/1] sm:aspect-[5.5/1]">
+          <div className="cover-image w-full rounded-xl overflow-hidden mb-4 aspect-[4/1] sm:aspect-[6/1]">
             <img 
               className="w-full h-full object-cover" 
               src={channel.coverImage} 

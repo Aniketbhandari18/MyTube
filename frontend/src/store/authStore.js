@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/user`;
 
@@ -89,6 +90,36 @@ export const useAuthStore = create((set) => ({
       }
 
       set({ isCheckingAuth: false });
+    }
+  },
+
+  editProfile: async (updatedData) =>{
+    set({ isLoading: true });
+
+    try {
+      const response = await axios.patch(`${API_BASE_URL}/edit-profile`, updatedData);
+
+      set({ user: response.data.user });
+      toast.success("Profile updated successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to update profile");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  editPassword: async (oldPassword, newPassword) =>{
+    set({ isLoading: true });
+
+    try {
+      await axios.patch(`${API_BASE_URL}/edit-password`, { oldPassword, newPassword });
+      toast.success("Password updated successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response.data.message || "Failed to update password");
+    } finally {
+      set({ isLoading: false });
     }
   },
 

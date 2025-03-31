@@ -10,6 +10,7 @@ import HomePage from "./pages/HomePage";
 import ChannelPage from "./pages/ChannelPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import WatchVideoPage from "./pages/WatchVideoPage";
+import EditProfilePage from "./pages/EditProfilePage";
 
 const ProtectedRoute = ({ children }) =>{
   const { user, isAuthenticated } = useAuthStore();
@@ -78,6 +79,13 @@ function App() {
         <Route 
           path="/watch/:videoId"
           element={ <WatchVideoPage /> }
+        />
+
+        <Route 
+          path="/channel/edit"
+          element={ <ProtectedRoute>
+            <EditProfilePage />
+          </ProtectedRoute> }
         />
 
         <Route 
