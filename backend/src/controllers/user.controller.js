@@ -410,9 +410,8 @@ const refreshAccessToken = async (req, res) => {
 };
 
 const editProfile = async (req, res) => {
-  const newUsername = req.body.newUsername?.trim().toLowerCase();
+  const newUsername = req.body.username?.trim().toLowerCase();
   const newDescription = req.body.description?.trim().toLowerCase();
-  const { oldPassword, newPassword } = req.body;
   const newAvatarLocalPath = req.files?.avatar?.[0]?.path;
   const newCoverImageLocalpath = req.files?.["cover-image"]?.[0]?.path;
 
@@ -422,23 +421,11 @@ const editProfile = async (req, res) => {
   try {
     const id = req.user._id; // user _id
 
-    // old password without a new password
-    if (oldPassword && !newPassword) {
-      throw new ApiError(400, "New password is required");
-    }
-    // new password without an old password
-    if (newPassword && !oldPassword) {
-      throw new ApiError(400, "Old password is required");
-    }
-
-    // check for atleast one field
     if (
       !newUsername &&
       !newDescription &&
       !newAvatarLocalPath &&
-      !newCoverImageLocalpath &&
-      !oldPassword &&
-      !newPassword
+      !newCoverImageLocalpath
     ) {
       throw new ApiError(400, "Atleast one field is required");
     }
@@ -473,21 +460,6 @@ const editProfile = async (req, res) => {
       }
 
       user.description = newDescription;
-    }
-
-    // update password
-    if (oldPassword && newPassword) {
-      const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
-
-      if (!isPasswordCorrect) {
-        throw new ApiError(400, "Wrong password");
-      }
-
-      if (oldPassword === newPassword) {
-        throw new ApiError(400, "New password cannot be same as old password");
-      }
-
-      user.password = newPassword;
     }
 
     // update avatar
@@ -530,6 +502,7 @@ const editProfile = async (req, res) => {
     return res.status(200).json({
       message: "Profile updated succesfully",
       user: {
+        _id: user._id,
         username: user.username,
         description: user.description,
         avatar: user.avatar,
@@ -547,6 +520,62 @@ const editProfile = async (req, res) => {
     if (newCoverImageLocalpath) fs.unlinkSync(newCoverImageLocalpath);
   }
 };
+
+const editPassword = async (req, res) =>{
+  try {
+    const id = req.user._id;
+    console.log(req.body);
+    console.log(req.body.oldPassword)
+    const oldPassword = req.body.oldPassword?.trim();
+    const newPassword = req.body.newPassword?.trim();
+  
+    const user = await User.findById(id);
+  
+    // Check for user
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+  
+    // old password without a new password
+    if (oldPassword && !newPassword) {
+      throw new ApiError(400, "New password is required");
+    }
+    // new password without an old password
+    if (newPassword && !oldPassword) {
+      throw new ApiError(400, "Old password is required");
+    }
+  
+    // update password
+    if (oldPassword && newPassword) {
+      const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+  
+      if (!isPasswordCorrect) {
+        throw new ApiError(400, "Wrong password");
+      }
+  
+      if (oldPassword === newPassword) {
+        throw new ApiError(400, "New password cannot be same as old password");
+      }
+  
+      user.password = newPassword;
+  
+      await user.save();
+  
+      return res.status(200).json({
+        message: "Password updated successfully",
+        user: {
+          _id: user._id,
+          username: user.username,
+        }
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Error updating password",
+    });
+  }
+}
 
 const getUserProfileDetails = async (req, res) =>{
   try {
@@ -696,6 +725,7 @@ export {
   logoutUser,
   refreshAccessToken,
   editProfile,
+  editPassword,
   getUserProfileDetails,
   deleteUserProfile,
   verifyUser,

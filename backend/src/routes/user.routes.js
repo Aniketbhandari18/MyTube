@@ -11,6 +11,7 @@ import {
   requestPasswordReset,
   resetPassword,
   checkAuth,
+  editPassword,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { optionalAuth, verifyJWT, verifyVerificationToken } from "../middlewares/auth.middleware.js";
@@ -44,6 +45,7 @@ router.route("/edit-profile").patch(
   ]),
   editProfile
 );
+router.route("/edit-password").patch(verifyJWT, editPassword);
 router.route("/delete-profile").delete(verifyJWT, deleteUserProfile);
 
 
