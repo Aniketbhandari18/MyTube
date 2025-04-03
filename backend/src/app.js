@@ -1,8 +1,22 @@
+import { fileURLToPath } from "url";
+import fs from "fs";
+import path from "path";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
 export const app = express();
+
+const fileName = fileURLToPath(import.meta.url);
+const dirName = path.dirname(fileName);
+console.log("dirname", dirName);
+console.log("fileName", fileName);
+
+const tempDir = path.join(dirName, "../public/temp");
+
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
