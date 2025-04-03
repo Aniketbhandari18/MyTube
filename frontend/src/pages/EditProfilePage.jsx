@@ -33,7 +33,7 @@ const EditProfilePage = () => {
   useEffect(() =>{
     descriptionRef.current.style.height = "auto";
     descriptionRef.current.style.height = descriptionRef.current.scrollHeight + "px";
-  }, [description, user.description])
+  }, [description, user])
 
   const handleDesciprtionChange = (e) =>{
     setDescription(e.target.value);
