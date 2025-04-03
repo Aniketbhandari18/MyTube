@@ -65,8 +65,9 @@ const EditProfilePage = () => {
 
     await editPassword(oldPassword, newPassword);
   }
+  const normalizeText = (text) => text?.replace(/\r\n/g, "\n") || "";
 
-  const isSaveDisabled = !username.trim() || !description.trim() || (username.trim() === user?.username && description.trim() === user?.description && avatar === user?.avatar && coverImage === user?.coverImage);
+  const isSaveDisabled = !username.trim() || !description.trim() || (username.trim() === user?.username && normalizeText(description.trim()) === normalizeText(user?.description) && avatar === user?.avatar && coverImage === user?.coverImage);
   const isPasswordChangeDisabled = !oldPassword.trim() || !newPassword.trim() || !confirmPassword.trim();
 
   const handleCancel = (type) =>{
