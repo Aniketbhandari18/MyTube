@@ -31,7 +31,12 @@ router.route("/:channelIdentifier").get(optionalAuth, getUserProfileDetails);
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
+const print = (req, res, next) => {
+  console.log("hit");
+  next();
+}
 router.route("/edit-profile").patch(
+  print,
   verifyJWT,
   upload.fields([
     {
