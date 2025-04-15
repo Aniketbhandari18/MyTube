@@ -71,6 +71,9 @@ const ChannelPage = () => {
     })()
   }, [channelIdentifier, user?._id])
 
+
+  console.log(videos)
+
   if (isLoading) return <LoadingSpinner />
 
   if (error) return <NotFoundPage />
@@ -119,11 +122,12 @@ const ChannelPage = () => {
 
         { videos.length ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-            { videos.map(({ _id, thumbnail, title, duration, views, createdAt }) =>(
+            { videos.map(({ _id, thumbnail, videoFile, title, duration, views, createdAt }) =>(
               <HomeVideoCard 
                 key={_id} 
                 _id={_id} 
                 thumbnail={thumbnail} 
+                videoFile={videoFile}
                 title={title} 
                 channelId={channel._id} 
                 channelName={channel.username} 
