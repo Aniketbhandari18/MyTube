@@ -44,7 +44,7 @@ const EditProfilePage = () => {
 
     const formData = new FormData();
     if (username.trim() !== user?.username) formData.append("username", username);
-    if (description.trim() !== user?.description) formData.append("description", description);
+    if (normalizeText(description.trim()) !== normalizeText(user?.description)) formData.append("description", description);
     if (avatar !== user?.avatar) formData.append("avatar", await imgToFile(avatar));
     if (coverImage !== user?.coverImage) formData.append("cover-image", await imgToFile(coverImage));
 
