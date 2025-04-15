@@ -35,6 +35,13 @@ const EditProfilePage = () => {
     descriptionRef.current.style.height = descriptionRef.current.scrollHeight + "px";
   }, [description, user])
 
+  useEffect(() => {
+    setUsername(user?.username);
+    setDescription(user?.description || "");
+    setAvatar(user?.avatar || "");
+    setCoverImage(user?.coverImage || "");
+  }, [user]);
+
   const handleDesciprtionChange = (e) =>{
     setDescription(e.target.value);
   }
@@ -53,6 +60,7 @@ const EditProfilePage = () => {
     await editProfile(formData);
     setSelectedAvatar(null);
     setSelectedCoverImage(null);
+    // isSaveDisabled = true;
   }
 
   const handlePasswordChange = async (e) =>{
