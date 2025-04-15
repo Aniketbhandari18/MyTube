@@ -20,7 +20,7 @@ export const useCommentStore = create((set, get) => ({
   },
 
   resetComments: () =>{
-    set({ comments: [], totalComments: 0, hasMore: true, error: null })
+    set({ comments: [], totalComments: 0, page: 0, hasMore: true, error: null })
   },
 
   fetchComments: async () =>{
