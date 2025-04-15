@@ -1,4 +1,4 @@
-import { EllipsisVertical, LoaderCircle, SquarePen, Trash2 } from "lucide-react";
+import { ChevronsDown, EllipsisVertical, LoaderCircle, SquarePen, Trash2 } from "lucide-react";
 import defaultUser from "../assets/defaultUser.png"
 import { useAuthStore } from "../store/authStore";
 import ContentBox from "./ContentBox";
@@ -9,7 +9,7 @@ import { useCommentStore } from "../store/commentStore";
 
 const CommentList = ({ maxLength }) => {
   const { user } = useAuthStore();
-  const { isLoading, comments, deleteComment, editComment } = useCommentStore();
+  const { isLoading, comments, hasMore, fetchComments, deleteComment, editComment } = useCommentStore();
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
@@ -135,6 +135,20 @@ const CommentList = ({ maxLength }) => {
           </div>
         )
       )) }
+
+      {hasMore && <div className="flex justify-center items-center mt-2 mb-2">
+        <button 
+          className="text-blue-600 font-semibold cursor-pointer text-sm sm:text-[16px]"
+          onClick={fetchComments}
+        >
+          {isLoading ? "Loading...": (
+            <div className="flex items-center">
+              <p>Load more</p>
+              <ChevronsDown className="size-5 mt-0.5" />
+            </div>
+          )}
+        </button>
+      </div>}
     </div>
   )
 }

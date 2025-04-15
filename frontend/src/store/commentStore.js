@@ -6,9 +6,9 @@ export const useCommentStore = create((set, get) => ({
   videoId: null,
   comments: [],
   totalComments: 0,
+  page: 0,
   hasMore: true,
   isLoading: true,
-  posting: false,
   error: null,
   
   setVideoId: (videoId) =>{
@@ -31,9 +31,17 @@ export const useCommentStore = create((set, get) => ({
       const { data } = await axios({
         method: "GET",
         url: `${import.meta.env.VITE_API_BASE_URL}/comment/${get().videoId}`,
+        params: {
+          page: get().page,
+        }
       })
 
       console.log("commentsData:", data)
+
+
+      if (data.hasMore){
+        set({ page: get().page + 1 });
+      }
 
       set({ 
         totalComments: data.totalComments,
