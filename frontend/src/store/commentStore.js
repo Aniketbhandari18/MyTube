@@ -19,6 +19,10 @@ export const useCommentStore = create((set, get) => ({
     set({ comments: comments })
   },
 
+  resetComments: () =>{
+    set({ comments: [], totalComments: 0, hasMore: true, error: null })
+  },
+
   fetchComments: async () =>{
     if (!get().hasMore) return;
 

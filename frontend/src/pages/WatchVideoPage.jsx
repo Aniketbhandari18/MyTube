@@ -112,7 +112,7 @@ const Engagement = ({ videoId, engagement, setEngagement }) =>{
 const WatchVideoPage = () => {
   const { user } = useAuthStore();
   const { initializeSubscription } = useSubscriptionStore();
-  const { setVideoId, totalComments, fetchComments } = useCommentStore();
+  const { setVideoId, totalComments, resetComments, fetchComments } = useCommentStore();
   const { videoId } = useParams();
 
   const [video, setVideo] = useState({});
@@ -151,7 +151,6 @@ const WatchVideoPage = () => {
         console.log(data)
 
         setVideo(data.video);
-        setVideoId(data.video._id);
         setChannel(data.channel);
         setIsOwner(data.channel._id === user?._id);
         initializeSubscription(data.channel.isSubscribed, data.channel._id);
@@ -166,12 +165,15 @@ const WatchVideoPage = () => {
   }, [videoId, user?._id])
 
   useEffect(() =>{
-    if (!video._id) return;
+    if (!videoId) return;
+
+    setVideoId(videoId);
+    resetComments();
 
     (async () =>{
       await fetchComments();
     })()
-  }, [video._id])
+  }, [videoId])
 
 
   const formattedSubscriberCount = formattedCount(channel.subscriberCount);
