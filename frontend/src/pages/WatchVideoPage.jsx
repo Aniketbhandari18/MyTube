@@ -243,16 +243,16 @@ const WatchVideoPage = () => {
             </div>
 
             {/* engagement */}
-            <div className="xs:block hidden">
+            {<div className={`${!isOwner ? "xs:block hidden": "block"}`}>
               <Engagement videoId={video._id} engagement={engagement} setEngagement={setEngagement} />
-            </div>
+            </div>}
           </div>
 
           {/* engagement-xs */}
-          <div className="flex justify-between items-center xs:hidden">
+          {!isOwner && <div className="flex justify-between items-center xs:hidden">
             <SubscribeButton />
             <Engagement videoId={video._id} engagement={engagement} setEngagement={setEngagement} />
-          </div>
+          </div>}
 
           {/* description */}
           <div className="bg-gray-200 rounded-lg mt-3 p-3">
