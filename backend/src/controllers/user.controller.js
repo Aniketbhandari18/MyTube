@@ -425,7 +425,9 @@ const editProfile = async (req, res) => {
       !newUsername &&
       !newDescription &&
       !newAvatarLocalPath &&
-      !newCoverImageLocalpath
+      !newCoverImageLocalpath &&
+      !deleteAvatar &&
+      !deleteCoverImage
     ) {
       throw new ApiError(400, "Atleast one field is required");
     }
@@ -454,7 +456,7 @@ const editProfile = async (req, res) => {
     }
 
     // update description
-    if (newDescription){
+    if (newDescription != undefined){
       if (newDescription === description){
         throw new ApiError(400, "New description cannot be same as previous description");
       }
