@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/authStore";
 import NavBar from "../components/NavBar";
 import Sidebar from "../components/Sidebar";
-import { Lock, User } from "lucide-react";
+import { Lock, Trash2, User } from "lucide-react";
 import Input from "../components/Input";
 import toast from "react-hot-toast";
 import FileInput from "../components/FileInput";
@@ -12,6 +12,7 @@ import ImageCropper from "../components/ImageCropper";
 import { imgToFile } from "../utils/imgToFile";
 
 const EditProfilePage = () => {
+  const defaultCoverImage = "https://placehold.co/900x250/d1d5db/6B7280?text=Upload+Cover+Image&font=Open+Sans&size=24";
   const { isLoading, user, editProfile, editPassword } = useAuthStore();
   console.log(user);
 
@@ -19,8 +20,8 @@ const EditProfilePage = () => {
 
   const [username, setUsername] = useState(user?.username);
   const [description, setDescription] = useState(user?.description);
-  const [avatar, setAvatar] = useState(user?.avatar);
-  const [coverImage, setCoverImage] = useState(user?.coverImage);
+  const [avatar, setAvatar] = useState(user?.avatar || "");
+  const [coverImage, setCoverImage] = useState(user?.coverImage || defaultCoverImage);
 
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [selectedCoverImage, setSelectedCoverImage] = useState(null);
@@ -39,7 +40,7 @@ const EditProfilePage = () => {
     setUsername(user?.username);
     setDescription(user?.description || "");
     setAvatar(user?.avatar || "");
-    setCoverImage(user?.coverImage || "");
+    setCoverImage(user?.coverImage || defaultCoverImage);
   }, [user]);
 
   const handleDesciprtionChange = (e) =>{
@@ -52,15 +53,20 @@ const EditProfilePage = () => {
     const formData = new FormData();
     if (username.trim() !== user?.username) formData.append("username", username);
     if (normalizeText(description.trim()) !== normalizeText(user?.description)) formData.append("description", description);
-    if (avatar !== user?.avatar) formData.append("avatar", await imgToFile(avatar));
-    if (coverImage !== user?.coverImage) formData.append("cover-image", await imgToFile(coverImage));
+    if (avatar !== user?.avatar){
+      if (!avatar) formData.append("deleteAvatar", "true");
+      else formData.append("avatar", await imgToFile(avatar));
+    }
+    if (coverImage !== user?.coverImage){
+      if (coverImage === defaultCoverImage) formData.append("deleteCoverImage", "true");
+      else formData.append("cover-image", await imgToFile(coverImage));
+    }
 
     console.log("formData", formData);
 
     await editProfile(formData);
     setSelectedAvatar(null);
     setSelectedCoverImage(null);
-    // isSaveDisabled = true;
   }
 
   const handlePasswordChange = async (e) =>{
@@ -75,7 +81,18 @@ const EditProfilePage = () => {
   }
   const normalizeText = (text) => text?.replace(/\r\n/g, "\n") || "";
 
-  const isSaveDisabled = !username.trim() || !description.trim() || (username.trim() === user?.username && normalizeText(description.trim()) === normalizeText(user?.description) && avatar === user?.avatar && coverImage === user?.coverImage);
+
+  const isSaveDisabled = (
+    !username.trim() ||
+    (
+      username.trim() === user?.username &&
+      normalizeText(description.trim()) === normalizeText(user?.description) &&
+      avatar === (user?.avatar || "") && 
+      // (coverImage === user?.coverImage || (coverImage === defaultCoverImage && user?.coverImage)) &&
+      ((!user?.coverImage && coverImage === defaultCoverImage) || coverImage === user?.coverImage)
+    )
+  );
+  
   const isPasswordChangeDisabled = !oldPassword.trim() || !newPassword.trim() || !confirmPassword.trim();
 
   const handleCancel = (type) =>{
@@ -135,18 +152,27 @@ const EditProfilePage = () => {
 
       <form onSubmit={handleEditProfile} className="mb-4">
         <div>
-          <div className="relative cover-image rounded-xl overflow-hidden mb-4">
+          <div className={`relative cover-image rounded-xl overflow-hidden mb-4 ${coverImage === defaultCoverImage ? "border-2 border-dashed border-gray-400" : ""}`}>
             {coverImage ? (
               <img 
                 className="w-full aspect-[4/1] sm:aspect-[5/1] object-cover" 
                 src={coverImage} 
               />
             ): (
-              <img className="w-full" src={defaultUser} />
+              <img className="w-full" src={defaultCoverImage} />
             )}
 
             <div className="absolute top-2 right-3">
               <FileInput setImgSrc={setSelectedCoverImage} />
+              {coverImage !== defaultCoverImage && (
+                <button 
+                  type="button"
+                  onClick={() => setCoverImage(defaultCoverImage)}
+                  className="bg-black text-white p-2 rounded-full cursor-pointer border border-gray-400 hover:shadow-blue-100 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] duration-200 hover:scale-110 active:scale-95 mt-2"
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -154,11 +180,24 @@ const EditProfilePage = () => {
             {avatar ? (
               <img className="rounded-full" src={avatar} />
             ): (
-              <img className="bg-gray-300 rounded-full" src={defaultUser} />
+              <div className="border-2 border-dashed border-gray-400 rounded-full">
+                <img className="bg-gray-300 rounded-full" src={defaultUser} />
+              </div>
             )}
 
             <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
+              <div className="flex gap-1 items-center justify-center">
+                
+              
               <FileInput setImgSrc={setSelectedAvatar} />
+              {avatar && <button
+                type="button"
+                onClick={() => setAvatar("")}
+                className="bg-black text-white p-2 rounded-full cursor-pointer border border-gray-400 hover:shadow-blue-100 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] duration-200 hover:scale-110 active:scale-95"
+              >
+                <Trash2 className="size-4" />
+              </button>}
+              </div>
             </div>
           </div>
         </div>
