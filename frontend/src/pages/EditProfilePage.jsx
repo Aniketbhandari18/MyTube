@@ -43,7 +43,7 @@ const EditProfilePage = () => {
     setCoverImage(user?.coverImage || defaultCoverImage);
   }, [user]);
 
-  const handleDesciprtionChange = (e) =>{
+  const handleDescriptionChange = (e) =>{
     setDescription(e.target.value);
   }
 
@@ -218,7 +218,7 @@ const EditProfilePage = () => {
             className="w-full min-h-30 resize-none overflow-hidden py-1 px-2 rounded-lg border border-gray-300 focus:outline-none focus:border-gray-500 focus:ring-gray-500 placeholder-gray-500 placeholder:font-[500] font-semibold transition duration-200"
             placeholder="Tell viewers about your channel. your description will appear on about section of your channel."
             value={description}
-            onChange={handleDesciprtionChange}
+            onChange={handleDescriptionChange}
           />
         </div>
 
