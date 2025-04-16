@@ -16,7 +16,6 @@ const userSchema = new Schema(
     description: {
       type: String,
       trim: true,
-      default: "No description provided..",
       maxLength: 1000
     },
     email: {
