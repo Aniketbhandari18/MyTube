@@ -37,7 +37,7 @@ const FileInput = ({ setImgSrc }) => {
         onClick={() => inputRef.current.click()}
         className="bg-black text-white p-2 rounded-full cursor-pointer border border-gray-400 hover:shadow-blue-100 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] duration-200 hover:scale-110 active:scale-95"
       >
-        <Pencil className="size-4" />
+        <Pencil className="size-3 sm:size-4" />
       </button>
 
       

@@ -162,15 +162,15 @@ const EditProfilePage = () => {
               <img className="w-full" src={defaultCoverImage} />
             )}
 
-            <div className="absolute top-2 right-3">
+            <div className="absolute top-1 xs:top-2 right-2 sm:right-3">
               <FileInput setImgSrc={setSelectedCoverImage} />
               {coverImage !== defaultCoverImage && (
                 <button 
                   type="button"
                   onClick={() => setCoverImage(defaultCoverImage)}
-                  className="bg-black text-white p-2 rounded-full cursor-pointer border border-gray-400 hover:shadow-blue-100 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] duration-200 hover:scale-110 active:scale-95 mt-2"
+                  className="bg-black text-white p-2 rounded-full cursor-pointer border border-gray-400 hover:shadow-blue-100 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] duration-200 hover:scale-110 active:scale-95 mt-1 sm:mt-2"
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3 sm:size-4" />
                 </button>
               )}
             </div>
@@ -195,7 +195,7 @@ const EditProfilePage = () => {
                 onClick={() => setAvatar("")}
                 className="bg-black text-white p-2 rounded-full cursor-pointer border border-gray-400 hover:shadow-blue-100 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] duration-200 hover:scale-110 active:scale-95"
               >
-                <Trash2 className="size-4" />
+                <Trash2 className="size-3 sm:size-4" />
               </button>}
               </div>
             </div>
