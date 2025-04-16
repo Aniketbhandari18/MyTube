@@ -18,7 +18,7 @@ const ChannelDesc = ({ isOwner, description }) =>{
   return (
     <>
       <div className="mb-1 sm:mb-3">
-        <ContentBox content={description} maxLength={60} popUpMode={true} />
+        <ContentBox content={description || "No description provided..."} maxLength={60} popUpMode={true} />
       </div>
 
       { !isOwner ? (<SubscribeButton />): (
