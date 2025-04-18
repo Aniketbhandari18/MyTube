@@ -4,6 +4,7 @@ import HomeVideoCard from "../components/HomeVideoCard";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LoaderCircle } from "lucide-react";
+import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
 const HomePage = () => {
   const [videos, setVideos] = useState([]);
@@ -11,7 +12,8 @@ const HomePage = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
-  const observerRef = useRef(null);
+  
+  const lastVideoRef = useInfiniteScroll({ loading, hasMore, setPage });
 
   const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/video`;
 
@@ -34,23 +36,6 @@ const HomePage = () => {
     })();
   }, [page])
 
-  useEffect(() =>{
-    if (loading || !hasMore) return;
-
-    const observer = new IntersectionObserver((entries) =>{
-      if (entries[0].isIntersecting){
-        console.log("hit bottom");
-        setPage((prevPage) => prevPage + 1); // This will load more videos due to useEffect above
-      }
-    }, {threshold: 0.5});
-
-    if (observerRef.current){
-      observer.observe(observerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [loading])
-  
   console.log(videos.length);
 
 
@@ -78,7 +63,7 @@ const HomePage = () => {
 
       </div>
 
-      <div className="h-1" ref={observerRef}></div>
+      <div className="h-1" ref={lastVideoRef}></div>
 
       {error && <div className="text-center text-red-500 mt-4">{error}</div>}
 
