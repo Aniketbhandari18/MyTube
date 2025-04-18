@@ -13,7 +13,7 @@ const homeVideos = async (req, res) =>{
   
     const result = await Video
       .find({})
-      .sort({ views: -1 })
+      .sort({ views: -1, _id: 1 })
       .skip(page * videosPerPage)
       .limit(videosPerPage + 1)
       .populate("owner", "_id username avatar");
