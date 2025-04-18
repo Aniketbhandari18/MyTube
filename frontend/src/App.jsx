@@ -11,6 +11,7 @@ import ChannelPage from "./pages/ChannelPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import WatchVideoPage from "./pages/WatchVideoPage";
 import EditProfilePage from "./pages/EditProfilePage";
+import SearchResultPage from "./pages/SearchResultPage";
 
 const ProtectedRoute = ({ children }) =>{
   const { user, isAuthenticated } = useAuthStore();
@@ -86,6 +87,11 @@ function App() {
           element={ <ProtectedRoute>
             <EditProfilePage />
           </ProtectedRoute> }
+        />
+
+        <Route 
+          path="/results"
+          element={ <SearchResultPage /> }
         />
 
         <Route 

@@ -3,12 +3,22 @@ import logo from "../assets/logo.png"
 import videoIcon from "../assets/video-icon.png"
 import { Search } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const NavBar = () => {
+  const navigate = useNavigate();
   const [focus, setFocus] = useState(false);
+  const [query, setQuery] = useState("");
 
   const { user, isAuthenticated } = useAuthStore();
+
+  const handleSearch = (e) =>{
+    if (!query.trim()) return;
+
+    if (e.key === "Enter"){
+      navigate("/results?search_query=" + encodeURIComponent(query.trim()));
+    }
+  }
 
   return (
     <div 
@@ -29,6 +39,8 @@ const NavBar = () => {
         <input 
           onFocus={() => setFocus(true)} 
           onBlur={() =>setFocus(false)}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleSearch}
           className="pl-12 outline-none h-full w-full" 
           type="text" 
           placeholder="Search.." />
