@@ -37,6 +37,10 @@ const videoSchema = new Schema(
     isPublished: {
       type: Boolean,
       default: true
+    },
+    isFake: {
+      type: Boolean,
+      default: false,
     }
   },
   {

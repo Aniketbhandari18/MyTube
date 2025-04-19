@@ -43,6 +43,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isFake: {
+      type: Boolean,
+      default: false,
+    },
     verificationCode: {
       type: String,
     },
