@@ -6,7 +6,7 @@ import { User } from "../../models/user.model.js"
 import dotenv from "dotenv";
 dotenv.config({ path: "../../../.env" });
 
-const count = 1000;
+const count = 30;
 
 const generateFakeUsers = (count) =>{
   const fakeUsers = [];
@@ -17,6 +17,7 @@ const generateFakeUsers = (count) =>{
       email: faker.internet.email(),
       password: faker.internet.password(),
       fullName: faker.person.fullName(),
+      description: faker.lorem.paragraphs({ min: 1, max: 3 }, "\n\n"),
       avatar: faker.image.avatar(),
       isVerified: true,
       isFake: true,
