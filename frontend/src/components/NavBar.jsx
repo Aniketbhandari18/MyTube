@@ -1,14 +1,20 @@
-import { useState } from "react"
+import defaultUser from "../assets/defaultUser.png"
+import { useEffect, useState } from "react"
 import logo from "../assets/logo.png"
 import videoIcon from "../assets/video-icon.png"
 import { Search } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
 import { Link, useNavigate } from "react-router-dom"
+import useDebounce from "../hooks/useDebounce"
+import axios from "axios"
 
 const NavBar = () => {
   const navigate = useNavigate();
   const [focus, setFocus] = useState(false);
   const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState();
+  const [loading, setLoading] = useState(false);
+  const debouncedQuery = useDebounce(query)?.trim();
 
   const { user, isAuthenticated } = useAuthStore();
 
@@ -19,6 +25,41 @@ const NavBar = () => {
       navigate("/results?search_query=" + encodeURIComponent(query.trim()));
     }
   }
+
+  const handleSuggestionClick = (suggestion) =>{
+    console.log("hit");
+    if (suggestion.type === "user"){
+      navigate(`/channel/${suggestion.username}`);
+    }
+    else{
+      navigate("/results?search_query=" + encodeURIComponent(suggestion.title));
+    }
+  }
+
+  // autocomplete suggestions
+  useEffect(() =>{
+    if (debouncedQuery.length < 3){
+      setSuggestions([]);
+      return;
+    }
+
+    (async () =>{
+      try {
+        setLoading(true);
+        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/search/suggestions`, {
+          params: {
+            search_query: query
+          }
+        });
+
+        setSuggestions(data.suggestions);
+      } catch (error) {
+        console.error('Error fetching search results:', error);
+      } finally {
+        setLoading(false);
+      }
+    })()
+  }, [debouncedQuery])
 
   return (
     <div 
@@ -38,12 +79,52 @@ const NavBar = () => {
         <Search className="size-[30px] absolute left-[7px] top-[4.2px] p-1 text-gray-500 cursor-pointer" />
         <input 
           onFocus={() => setFocus(true)} 
-          onBlur={() =>setFocus(false)}
+          onBlur={() => setTimeout(() => setFocus(false), 0)}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleSearch}
           className="pl-12 outline-none h-full w-full" 
           type="text" 
           placeholder="Search.." />
+
+        {/* Autocomplete Results */}
+        {focus && suggestions.length > 0 && (
+          <ul className="absolute top-[100%] left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1 max-h-100 overflow-y-auto">
+            {suggestions.map((suggestion) => (
+              <li
+                key={suggestion._id}
+                onMouseDown={() => handleSuggestionClick(suggestion)}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-2 items-center"
+              >
+                {suggestion.type === "video" ? (
+                  <span className="font-medium">{suggestion.title}</span>
+                ) : (
+                  <>
+                    <img
+                      src={suggestion.avatar || defaultUser}
+                      alt={suggestion.username}
+                      className="w-6 h-6 rounded-full"
+                    />
+                    <span>{suggestion.username}</span>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Loading State */}
+        {loading && suggestions.length === 0 && (
+          <ul className="absolute top-[100%] left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1 max-h-100 overflow-y-auto">
+            <li className="px-4 py-2 text-center">Loading...</li>
+          </ul>
+        )}
+
+        {/* No Results */}
+        {focus && debouncedQuery && suggestions.length === 0 && !loading && (
+          <ul className="absolute top-[100%] left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1 max-h-100 overflow-y-auto">
+            <li className="px-4 py-2 text-gray-500">No results found</li>
+          </ul>
+        )}
       </div>
 
       <div className="shrink-0 rounded-full cursor-pointer">
