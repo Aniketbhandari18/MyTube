@@ -5,7 +5,6 @@ import {
   incrementView,
   deleteVideo,
   getVideoById,
-  searchResults,
   homeVideos,
   getVideosByChannelId,
 } from "../controllers/video.controller.js";
