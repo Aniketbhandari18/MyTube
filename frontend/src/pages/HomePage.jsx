@@ -41,9 +41,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pr-3 md:pr-6 pt-21 xs:pt-24 pl-7 xs:pl-18 sm:pl-23 md:pl-26 pb-2">
-      <NavBar />
-      <Sidebar />
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 sm:gap-2 lg:gap-4">
         {videos.map(({ _id, thumbnail, videoFile, title, owner, duration, views, createdAt }) =>(
           <HomeVideoCard 

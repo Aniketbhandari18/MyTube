@@ -1,4 +1,4 @@
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast"
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/Loginpage";
@@ -12,6 +12,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 import WatchVideoPage from "./pages/WatchVideoPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import SearchResultPage from "./pages/SearchResultPage";
+import NavBar from "./components/NavBar";
+import Sidebar from "./components/Sidebar";
 
 const ProtectedRoute = ({ children }) =>{
   const { user, isAuthenticated } = useAuthStore();
@@ -35,6 +37,10 @@ const RedirectAuthenticatedUser = ({ children }) =>{
 
 function App() {
   const { isCheckingAuth, checkAuth } = useAuthStore();
+  const location = useLocation();
+
+  const hideNavAndSidebarOnRoutes = ["/login", "/register", "/verify"];
+  const showNavAndSidebar = !hideNavAndSidebarOnRoutes.includes(location.pathname);
 
   useEffect(() =>{
     checkAuth();
@@ -45,6 +51,12 @@ function App() {
   return (
     <>
       <Toaster />
+      {showNavAndSidebar && (
+        <>
+          <NavBar />
+          <Sidebar />
+        </>
+      )}
       <Routes>
         <Route
           path="/"

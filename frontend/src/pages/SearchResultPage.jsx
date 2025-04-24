@@ -57,9 +57,6 @@ const SearchResultPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pr-3 md:pr-6 pt-21 xs:pt-24 pl-7 xs:pl-18 sm:pl-23 md:pl-26 pb-2">
-      <NavBar />
-      <Sidebar />
-
       <div className="px-4">
       {videoResults.map(({ _id, thumbnail, videoFile, title, description, channel, duration, views, createdAt }) =>(
           isSmallScreen ? (

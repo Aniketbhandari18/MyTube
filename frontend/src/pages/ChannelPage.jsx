@@ -80,9 +80,6 @@ const ChannelPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pr-3 xs:pr-4.5 sm:pr-11 pt-22 sm:pt-24 pl-7.5 xs:pl-20 sm:pl-30 pb-2">
-      <NavBar />
-      <Sidebar />
-
       <div className="mb-4">
         {/* coverImage */}
         { channel.coverImage && (

@@ -124,9 +124,6 @@ const EditProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pr-4 sm:pr-20 md:pr-37 pt-24 pl-8.5 xs:pl-20 sm:pl-38 md:pl-48 pb-6">
-      <NavBar />
-      <Sidebar />
-
       {selectedAvatar && (
         <ImageCropper 
           imgSrc={selectedAvatar}

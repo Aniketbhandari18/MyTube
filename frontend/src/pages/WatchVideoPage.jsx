@@ -191,9 +191,6 @@ const WatchVideoPage = () => {
       className="min-h-screen bg-gray-50 
       pr-4.5 sm:pr-11 md:pr-16 pt-22 sm:pt-26 pl-8.5 xs:pl-20 sm:pl-30 md:pl-35 pb-2"
     >
-      <NavBar />
-      <Sidebar />
-
       <div>
         {/* video section */}
         <div>
