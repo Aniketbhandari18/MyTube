@@ -1,5 +1,5 @@
 import defaultUser from "../assets/defaultUser.png"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import logo from "../assets/logo.png"
 import videoIcon from "../assets/video-icon.png"
 import { Search } from "lucide-react"
@@ -7,21 +7,26 @@ import { useAuthStore } from "../store/authStore"
 import { Link, useNavigate } from "react-router-dom"
 import useDebounce from "../hooks/useDebounce"
 import axios from "axios"
+import useSearchStore from "../store/searchStore"
 
 const NavBar = () => {
   const navigate = useNavigate();
   const [focus, setFocus] = useState(false);
-  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState();
   const [loading, setLoading] = useState(false);
-  const debouncedQuery = useDebounce(query)?.trim();
 
   const { user, isAuthenticated } = useAuthStore();
+  const { query, setQuery } = useSearchStore();
+
+  const debouncedQuery = useDebounce(query)?.trim();
+
+  const inputRef = useRef(null);
 
   const handleSearch = (e) =>{
     if (!query.trim()) return;
 
     if (e.key === "Enter"){
+      inputRef.current.blur();
       navigate("/results?search_query=" + encodeURIComponent(query.trim()));
     }
   }
@@ -29,6 +34,7 @@ const NavBar = () => {
   const handleSuggestionClick = (suggestion) =>{
     console.log("hit");
     if (suggestion.type === "user"){
+      setQuery("");
       navigate(`/channel/${suggestion.username}`);
     }
     else{
@@ -78,6 +84,8 @@ const NavBar = () => {
       <div className={`relative bg-white rounded-md flex items-center py-2 min-w-36 w-lg shadow-[0_1px_8px_rgb(0,0,0,0.2)] ml-4 mr-4 ${focus && "shadow-[0_2px_14px_rgb(0,0,0,0.2)]"}`}>
         <Search className="size-[30px] absolute left-[7px] top-[4.2px] p-1 text-gray-500 cursor-pointer" />
         <input 
+          ref={inputRef}
+          value={query}
           onFocus={() => setFocus(true)} 
           onBlur={() => setTimeout(() => setFocus(false), 0)}
           onChange={(e) => setQuery(e.target.value)}

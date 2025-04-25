@@ -7,8 +7,11 @@ import Sidebar from "../components/Sidebar";
 import { LoaderCircle } from "lucide-react";
 import RowVideoCard from "../components/RowVideoCard";
 import HomeVideoCard from "../components/HomeVideoCard";
+import useSearchStore from "../store/searchStore";
 
 const SearchResultPage = () => {
+  const { query, setQuery } = useSearchStore();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [videoResults, setVideoResults] = useState([]);
@@ -36,6 +39,7 @@ const SearchResultPage = () => {
   useEffect(() => {
     setVideoResults([]);
     setPage(0);
+    setQuery(searchQuery);
   }, [searchQuery]);
 
   useEffect(() => {
