@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
-import { useSubscriptionStore } from "../store/subscriptionStore";
+import { useState } from "react";
 
-const SubscribeButton = () => {
+const SubscribeButton = ({ initialSubscription, channelId }) => {
   const { isAuthenticated } = useAuthStore();
-  const { isLoading, isSubscribed, handleSubscription } = useSubscriptionStore();
+  const [isSubscribed, setIsSubscribed] = useState(initialSubscription);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleSubscription = async () =>{
     if (isLoading) return;
@@ -15,7 +16,17 @@ const SubscribeButton = () => {
       return;
     }
 
-    await handleSubscription();
+    try {
+      setIsLoading(true);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/subscription/c/${channelId}`);
+      
+      setIsSubscribed((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong..")
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

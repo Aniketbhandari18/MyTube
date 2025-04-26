@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { formattedCount } from "../utils/number";
 import SubscribeButton from "../components/SubscribeButton";
-import { useSubscriptionStore } from "../store/subscriptionStore";
 import { useAuthStore } from "../store/authStore";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "framer-motion";
@@ -111,13 +110,13 @@ const Engagement = ({ videoId, engagement, setEngagement }) =>{
 
 const WatchVideoPage = () => {
   const { user } = useAuthStore();
-  const { initializeSubscription } = useSubscriptionStore();
   const { setVideoId, totalComments, resetComments, fetchComments } = useCommentStore();
   const { videoId } = useParams();
 
   const [video, setVideo] = useState({});
   const [channel, setChannel] = useState({});
   const [engagement, setEngagement] = useState({});
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -153,7 +152,7 @@ const WatchVideoPage = () => {
         setVideo(data.video);
         setChannel(data.channel);
         setIsOwner(data.channel._id === user?._id);
-        initializeSubscription(data.channel.isSubscribed, data.channel._id);
+        setIsSubscribed(data.channel.isSubscribed);
         setEngagement(data.engagement);
       } catch (err) {
         console.log(err);
@@ -234,7 +233,7 @@ const WatchVideoPage = () => {
               </div>
 
               { !isOwner && <div className="xs:block hidden">
-                <SubscribeButton />
+                <SubscribeButton initialSubscription={isSubscribed} channelId={channel._id} />
               </div> }
               
             </div>
@@ -247,7 +246,7 @@ const WatchVideoPage = () => {
 
           {/* engagement-xs */}
           {!isOwner && <div className="flex justify-between items-center xs:hidden">
-            <SubscribeButton />
+            <SubscribeButton initialSubscription={isSubscribed} channelId={channel._id} />
             <Engagement videoId={video._id} engagement={engagement} setEngagement={setEngagement} />
           </div>}
 
