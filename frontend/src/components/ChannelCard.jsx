@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const ChannelCard = ({ _id, username, description, avatar, subscriberCount }) => {
   const [maxLength, setMaxLength] = useState(250);
   
-    const formattedDescription = description.length > maxLength ? description.slice(0, maxLength).trim() + "..." : description;
+    const formattedDescription = (!description) ? "": description.length > maxLength ? description.slice(0, maxLength).trim() + "..." : description;
   
     useEffect(() =>{
       const updateMaxLength = () =>{
