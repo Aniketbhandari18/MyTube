@@ -3,7 +3,7 @@ import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
-const SubscribeButton = ({ initialSubscription, channelId }) => {
+const SubscribeButton = ({ initialSubscription, channelId, className="" }) => {
   const { isAuthenticated } = useAuthStore();
   const [isSubscribed, setIsSubscribed] = useState(initialSubscription);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +35,8 @@ const SubscribeButton = ({ initialSubscription, channelId }) => {
       disabled={isLoading}
       className={`px-4 py-2 rounded-3xl font-semibold 
         ${isSubscribed ? "bg-gray-300 text-black": "bg-black text-white"} 
-        ${isLoading ? "opacity-60 cursor-not-allowed": "cursor-pointer"}`
+        ${isLoading ? "opacity-60 cursor-not-allowed": "cursor-pointer"}
+        ${className}`
       }
     >
       {!isSubscribed ? "Subscribe": "Unsubscribe"}
