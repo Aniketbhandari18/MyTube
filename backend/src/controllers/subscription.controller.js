@@ -76,6 +76,7 @@ const getSubscribedChannels = async (req, res) =>{
                 "_id": 1,
                 "username": 1,
                 "avatar": 1,
+                "description": 1,
               }
             },
           ]
@@ -105,6 +106,7 @@ const getSubscribedChannels = async (req, res) =>{
           "channel._id": 1,
           "channel.username": 1,
           "channel.avatar": 1,
+          "channel.description": 1,
           "channel.subscriberCount": 1
         }
       },
