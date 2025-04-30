@@ -45,14 +45,14 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
 
   return (
     <Link to={`/watch/${_id}`}>
-      <div className="rounded-md p-2 bg-gray-50 hover:bg-gray-200 transition-all duration-300 cursor-pointerf flex gap-5">
+      <div className="rounded-md p-2 bg-gray-50 hover:bg-gray-200 transition-all duration-300 cursor-pointerf flex gap-3 sm:gap-5">
         <div 
-          className="thumbnail relative mb-2 aspect-video"
+          className="thumbnail relative mb-2 aspect-video shrink-0"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}  
         >
           <img
-            className={`w-170 rounded-md aspect-video object-cover bg-gray-200 duration-300
+            className={`w-[150px] xs:w-[180px] sm:w-[35vw] md:w-[35vw] rounded-md aspect-video object-cover bg-gray-200 duration-300
               ${!isHovered ? "opacity-100": "opacity-0"}`}
             src={thumbnail}
           />
@@ -70,16 +70,17 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
 
         <div className="details flex flex-col w-full">
           {/* title and view and time */}
-          <div className="video-details font-semibold mb-2">
-            <div className="title leading-4.5">{title}</div>
+          <div className="video-details font-semibold mb-1 sm:mb-2 sm:text-base text-sm">
+            <div className="title leading-3.5 sm:leading-4.5 line-clamp-2">{title}</div>
             <div className="views text-sm text-gray-500">
-              {formattedViews} views &#8226; {uploadedTime}
+              <span>{formattedViews} views</span>
+              <span className="sm:inline hidden"> &#8226; {uploadedTime}</span>
             </div>
           </div>
           
           {/* username and avatar */}
-          <div className="profile-img mr-2 shrink-0 flex gap-2 mb-2">
-            <Link to={`/channel/${channelId}`} className="w-8">
+          <div className="profile-img flex items-center gap-2 mb-0 sm:mb-2">
+            <Link to={`/channel/${channelId}`} className="w-6 xs:w-7 sm:w-8 shrink-0 hidden xs:block">
               { channelAvatar ? (<img
                 className="w-full rounded-full"
                 src={channelAvatar} // avatar
@@ -87,7 +88,7 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
                 <img className="w-full bg-gray-300 rounded-full" src={defaultUser} />
               ) }
             </Link>
-            <div className="flex items-center channel-name text-md font-semibold text-gray-500 leading-none">
+            <div className="text-md font-semibold text-gray-500 leading-none sm:text-base text-sm break-all line-clamp-1">
               <Link to={`/channel/${channelId}`}>
                 {channelName}
               </Link>
@@ -95,7 +96,7 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
           </div>
 
           {/* description */}
-          <div className="description text-sm text-gray-600">
+          <div className="description text-sm text-gray-600 hidden sm:block">
             {formattedDescription}
           </div>
         </div>
