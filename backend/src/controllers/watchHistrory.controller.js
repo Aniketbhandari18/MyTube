@@ -88,15 +88,15 @@ const getWatchHistory = async (req, res) =>{
   
     const watchHistory = await WatchHistory
       .find({ user: userId })
-      .sort({ createdAt: -1 })
+      .sort({ watchedAt: -1 })
       .skip(page * videosPerPage)
       .limit(videosPerPage)
       .populate({
         path: "video",
-        select: "_id thumbnail title duration owner views createdAt",
+        select: "_id thumbnail title description videoFile duration owner views createdAt",
         populate: {
           path: "owner",
-          select: "_id username"
+          select: "_id username avatar"
         }
       });
 
