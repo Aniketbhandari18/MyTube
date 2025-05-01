@@ -19,7 +19,7 @@ const SearchResultPage = () => {
   const [page, setPage] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-  const lastVideoRef = useInfiniteScroll({ loading, hasMore, setPage });
+  const lastVideoRef = useInfiniteScroll(loading, hasMore, setPage);
 
   const searchQuery = searchParams.get("search_query");
 

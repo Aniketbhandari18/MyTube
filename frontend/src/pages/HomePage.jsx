@@ -13,7 +13,7 @@ const HomePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
   
-  const lastVideoRef = useInfiniteScroll({ loading, hasMore, setPage });
+  const lastVideoRef = useInfiniteScroll(loading, hasMore, setPage);
 
   const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/video`;
 

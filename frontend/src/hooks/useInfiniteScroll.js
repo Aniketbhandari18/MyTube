@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react"
 
-const useInfiniteScroll = ({loading, hasMore, setPage}) =>{
+const useInfiniteScroll = (loading, hasMore, setPage) =>{
   const observerRef = useRef(null);
 
   const lastElementRef = useCallback((node) =>{
