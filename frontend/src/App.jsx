@@ -15,6 +15,7 @@ import SearchResultPage from "./pages/SearchResultPage";
 import NavBar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
 import AllSubscriptionsPage from "./pages/AllSubscriptionsPage";
+import WatchHistoryPage from "./pages/WatchHistoryPage";
 
 const ProtectedRoute = ({ children }) =>{
   const { user, isAuthenticated } = useAuthStore();
@@ -110,6 +111,11 @@ function App() {
         <Route 
           path="/subscriptions"
           element={ <AllSubscriptionsPage /> }
+        />
+
+        <Route 
+          path="/history"
+          element={ <WatchHistoryPage /> }
         />
 
         <Route 
