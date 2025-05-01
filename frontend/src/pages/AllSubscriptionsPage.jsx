@@ -3,7 +3,7 @@ import ChannelCard from "../components/ChannelCard";
 import { useAuthStore } from "../store/authStore";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
-import AuthPrompt from "../components/AuthPrompt";
+import NoticeMessage from "../components/NoticeMessage";
 import { List } from "lucide-react";
 
 const AllSubscriptionsPage = () => {
@@ -33,7 +33,7 @@ const AllSubscriptionsPage = () => {
 
   if (!isAuthenticated){
     return (
-      <AuthPrompt 
+      <NoticeMessage 
         icon={List}
         title={"Please login to view your subscriptions."}
         description={"You need to be logged in to access this page."}
