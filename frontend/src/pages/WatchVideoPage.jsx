@@ -109,7 +109,7 @@ const Engagement = ({ videoId, engagement, setEngagement }) =>{
 }
 
 const WatchVideoPage = () => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { setVideoId, totalComments, resetComments, fetchComments } = useCommentStore();
   const { videoId } = useParams();
 
@@ -174,6 +174,29 @@ const WatchVideoPage = () => {
     })()
   }, [videoId])
 
+  const incrementViewCount = async () =>{
+    if (!video._id) return;
+
+    try {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/video/incrementView/${video._id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const addToWatchHistory = async () =>{
+    if (!isAuthenticated) return;
+
+    try {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/watchHistory/${video._id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleVideoPlay = () =>{
+    incrementViewCount();
+    addToWatchHistory();
+  }
 
   const formattedSubscriberCount = formattedCount(channel.subscriberCount);
   const formattedViews = formattedCount(video.views);
@@ -196,6 +219,7 @@ const WatchVideoPage = () => {
           {/* video */}
           <div className="aspect-video mb-1 sm:mb-2 shadow-xl">
             <video
+              onPlay={handleVideoPlay}
               className="rounded-xl w-full h-full bg-black/70"
               controls
               autoPlay
