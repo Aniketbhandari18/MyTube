@@ -14,6 +14,6 @@ const engagementSchema = new Schema({
     enum: ["like", "dislike"],
     required: true
   }
-});
+}, {timestamps: true});
 
 export const Engagement = model("Engagement", engagementSchema);
