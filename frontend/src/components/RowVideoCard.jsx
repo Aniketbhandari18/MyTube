@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { formatTime, timeAgo } from "../utils/date";
 import { formattedCount } from "../utils/number";
 import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 
-const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId, channelName, channelAvatar, duration, views, createdAt }) => {
+const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId, channelName, channelAvatar, duration, views, createdAt, onRemove }) => {
   const formattedDuration = formatTime(duration);
   const uploadedTime = timeAgo(createdAt);
   const formattedViews = formattedCount(views);
@@ -44,9 +45,9 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
 
 
   return (
-    <Link to={`/watch/${_id}`}>
-      <div className="rounded-md p-2 bg-gray-50 hover:bg-gray-200 transition-all duration-300 cursor-pointerf flex gap-3 sm:gap-5">
-        <div 
+    <div>
+      <div className="rounded-md p-2 bg-gray-50 flex gap-3 sm:gap-5">
+        <Link to={`/watch/${_id}`}
           className="thumbnail relative mb-2 aspect-video shrink-0"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}  
@@ -66,12 +67,12 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
           />
 
           <span className="absolute right-2 bottom-2 bg-black/55 text-white text-sm py-0.5 px-1 rounded-md">{formattedDuration}</span>
-        </div>
+        </Link>
 
-        <div className="details flex flex-col w-full">
+        <div className={`relative details flex flex-col w-full ${onRemove && "pr-8"}`}>
           {/* title and view and time */}
           <div className="video-details font-semibold mb-1 sm:mb-2 sm:text-base text-sm">
-            <div className="title leading-3.5 sm:leading-4.5 line-clamp-2">{title}</div>
+            <div className="title leading-3.5 sm:leading-4.5 line-clamp-2 overflow-hidden [overflow-wrap:anywhere]">{title}</div>
             <div className="views text-sm text-gray-500">
               <span>{formattedViews} views</span>
               <span className="sm:inline hidden"> &#8226; {uploadedTime}</span>
@@ -99,9 +100,19 @@ const RowVideoCard = ({ _id, thumbnail, videoFile, title, description, channelId
           <div className="description text-sm text-gray-600 hidden sm:block">
             {formattedDescription}
           </div>
+
+          {/* remove button */}
+          {onRemove && (
+            <button 
+              onClick={onRemove}
+              className="absolute top-0 right-0 cursor-pointer p-1 rounded-full hover:bg-gray-300 duration-200"
+            >
+              <X className="size-5" />
+            </button>
+          )}
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 export default RowVideoCard;
