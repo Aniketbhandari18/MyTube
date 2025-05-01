@@ -67,10 +67,10 @@ const getLikedVideos = async (req, res) =>{
       .limit(videosPerPage)
       .populate({
         path: "video",
-        select: "_id thumbnail title duration views createdAt",
+        select: "_id thumbnail title description duration views createdAt",
         populate: {
           path: "owner",
-          select: "_id username"
+          select: "_id username avatar"
         }
       })
       .select("-action -user");
